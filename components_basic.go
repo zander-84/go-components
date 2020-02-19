@@ -33,9 +33,9 @@ type BasicComponents interface {
 var _ BasicComponents = new(c)
 
 type c struct {
-	objs  map[string]interface{} // 组件
-	mutex sync.Mutex
-	container Container              // 构建容器
+	objs      map[string]interface{} // 组件
+	mutex     sync.Mutex
+	container Container // 构建容器
 }
 
 func (this *c) Attach(name string, data interface{}) error {
@@ -79,15 +79,15 @@ func (this *c) IsExist(name string) bool {
 func (this *c) Notify(keys ...string) {
 	if len(keys) > 0 {
 		for _, key := range keys {
-			if key==fieldWorker{
+			if key == fieldWorker {
 				continue
 			}
 			this.Detach(key)
 		}
 	} else {
 		for key, _ := range this.objs {
-			if this.isInternalKey(key){
-				if key==fieldWorker{
+			if this.isInternalKey(key) {
+				if key == fieldWorker {
 					continue
 				}
 				this.Detach(key)

@@ -8,7 +8,7 @@ import (
 	"github.com/zander-84/go-components/libs/data/queue"
 	"github.com/zander-84/go-components/libs/helper"
 	"github.com/zander-84/go-components/libs/logger"
-	CMiddlewares "github.com/zander-84/go-components/libs/middlewares"
+	"github.com/zander-84/go-components/libs/middlewares"
 	"github.com/zander-84/go-components/libs/mysql"
 	"github.com/zander-84/go-components/libs/nsq"
 	"github.com/zander-84/go-components/libs/validate"
@@ -70,5 +70,4 @@ type Components interface {
 	Message(typ int) CMessage.Message
 
 	Middleware() *CMiddlewares.MiddleWares
-
 }

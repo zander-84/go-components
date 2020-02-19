@@ -12,7 +12,7 @@ import (
 	"github.com/zander-84/go-components/libs/helper"
 	"github.com/zander-84/go-components/libs/logger"
 	"github.com/zander-84/go-components/libs/logger/zap-log"
-	CMiddlewares "github.com/zander-84/go-components/libs/middlewares"
+	"github.com/zander-84/go-components/libs/middlewares"
 	"github.com/zander-84/go-components/libs/mysql"
 	"github.com/zander-84/go-components/libs/mysql/grom"
 	"github.com/zander-84/go-components/libs/nsq"
