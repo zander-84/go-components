@@ -1,0 +1,6 @@
+components:
+  worker:
+    minWorkers: 5
+    maxWorkers: 10
+    maxQueues: 100000000
+

@@ -1,0 +1,5 @@
+components:
+  cache: memory
+  memory:
+    expiration: 10
+    cleanupInterval: 10

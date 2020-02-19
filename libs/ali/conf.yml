@@ -1,0 +1,9 @@
+components:
+  ali:
+    accesskeyid: 123456
+    accesskeysecret: 123456
+    oss:
+      endpoint: oss-cn-hangzhou.aliyuncs.com
+      bucket: tx-oss-test-01
+      dir: userData/
+      host: https://www.localhost.com

@@ -1,0 +1,6 @@
+components:
+  nsq:
+    producerTcpAddrs:
+      - 172.16.86.151:4150
+    consumerHttpAddrs:
+      - 172.16.86.151:4161
