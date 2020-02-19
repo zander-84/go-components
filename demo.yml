@@ -1,0 +1,80 @@
+components:
+  mysql:
+    gorm:
+      host: 127.0.0.1
+      Port: 3307
+      database: test
+      user: root
+      pwd: root
+      charset: utf8mb4
+      maxidleconns: 2000
+      maxopenconns: 2000
+      connmaxlifetime: 300
+      debug: true
+
+  Cache: redis
+  memory:
+      expiration: 10
+      cleanupInterval: 10
+
+  redis:
+    cluster:
+      -   addr: 127.0.0.1:6379
+          password: 123456
+          db: 0
+          poolsize: 10
+          minidle: 5
+          idletimeout: 300
+  log:
+    zap:
+      level: -1      #{DesbugLevel:-1,  InfoLevel:0, WarnLevel:1, ErrorLevel:2, DPanicLevel:3, FatalLevel:4}
+      name: api
+      addcaller: true
+      consolehook:
+        enable: true
+      filehook:
+        enable: true
+        path:  ./logs/
+        maxage: 10 # days
+        maxbackups: 10
+        maxsize: 50 # MB
+      emailhook:   #配置了有效host  就生效email  级别在error之上
+        enable: true
+        host: smtp.qq.com
+        port: 465
+        user: 123456@qq.com
+        password: 123456
+        to:
+          - 123456@qq.com
+          - 123456@163.com
+      mysqlhook:
+        enable: true
+        TableName: log
+
+  validator:
+    locale: zh
+    validateTag: validate
+    commentTag: comment
+    jsonTag: json
+
+
+  ali:
+    accesskeyid: 123456
+    accesskeysecret: 123456
+    oss:
+      endpoint: oss-cn-hangzhou.aliyuncs.com
+      bucket: tx-oss-test-01
+      dir: userData/
+      host: https://www.baidu.com
+
+  nsq:
+    producerTcpAddrs:
+      - 127.0.0.1:4150
+    consumerHttpAddrs:
+      - 127.0.0.1:4161
+
+  worker:
+    minWorkers: 5
+    maxWorkers: 10
+    maxQueues: 100000000
+
