@@ -6,10 +6,7 @@ go components
 package main
 
 import (
-	"github.com/jinzhu/gorm"
     "github.com/zander-84/go-components"
-	"time"
-	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 
