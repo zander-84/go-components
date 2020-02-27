@@ -1,9 +1,9 @@
 package CRedis
 
 import (
-	"github.com/go-redis/cache"
-	"github.com/go-redis/redis"
-	"github.com/vmihailenco/msgpack"
+	"github.com/go-redis/cache/v7"
+	"github.com/go-redis/redis/v7"
+	"github.com/vmihailenco/msgpack/v4"
 	CCache "github.com/zander-84/go-components/libs/cache"
 	"reflect"
 	"time"

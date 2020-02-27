@@ -13,9 +13,8 @@ require (
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.2.0
-	github.com/go-redis/cache v6.4.0+incompatible
 	github.com/go-redis/cache/v7 v7.0.2
-	github.com/go-redis/redis v6.15.7+incompatible
+	github.com/go-redis/redis/v7 v7.0.0-beta.4
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/jinzhu/gorm v1.9.12
 	github.com/kr/pretty v0.2.0
@@ -25,7 +24,7 @@ require (
 	github.com/rs/xid v1.2.1
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/spf13/viper v1.6.2
-	github.com/vmihailenco/msgpack v4.0.4+incompatible
+	github.com/vmihailenco/msgpack/v4 v4.2.0
 	go.uber.org/zap v1.14.0
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
