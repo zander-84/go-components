@@ -29,10 +29,9 @@ var (
 
 type BasicConf struct {
 	Components struct {
-
 		Helper CHelper.Conf
 
-		Mysql struct{
+		Mysql struct {
 			Gorm CGrom.Conf
 		}
 
@@ -61,7 +60,7 @@ type BasicConf struct {
 }
 type Conf struct {
 	obj     *viper.Viper
-	path    string
+	paths   []string
 	dataPtr []interface{}
 	*BasicConf
 }
@@ -78,9 +77,12 @@ func NewConf(opts ...func(interface{})) *Conf {
 		}
 
 		confObj.obj.SetConfigType("yml")
-		confObj.obj.AddConfigPath(confObj.path)
+		for _, path := range confObj.paths {
+			if len(path) > 0 {
+				confObj.obj.AddConfigPath(path)
+			}
+		}
 		confObj.obj.WatchConfig()
-
 		if err := confObj.obj.ReadInConfig(); err != nil {
 			log.Fatal("配置文件加载错误" + err.Error())
 		}
@@ -109,10 +111,10 @@ func NewConf(opts ...func(interface{})) *Conf {
 }
 
 // 设置配置文件路径
-func SetConfPath(confPath string) func(interface{}) {
+func SetConfPath(confPaths []string) func(interface{}) {
 	return func(i interface{}) {
 		this := i.(*Conf)
-		this.path = confPath
+		this.paths = confPaths
 	}
 }
 

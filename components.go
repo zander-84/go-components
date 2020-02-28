@@ -35,7 +35,7 @@ type components struct {
 	conf *Conf // 配置文件
 }
 
-func NewComponents(confPath string, configs ...interface{}) Components {
+func NewComponents(confPath []string, configs ...interface{}) Components {
 	componentOnce.Do(func() {
 		this := new(components)
 		this.objs = make(map[string]interface{}, 0)
