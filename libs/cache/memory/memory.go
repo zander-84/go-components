@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 )
+
 var _ CCache.Cache = new(Memory)
 
 type Memory struct {
@@ -18,7 +19,7 @@ type Memory struct {
 // *Memory
 func NewMemory(opts ...func(interface{})) *Memory {
 	_memory := &Memory{}
-	for _,opt := range(opts){
+	for _, opt := range opts {
 		opt(_memory)
 	}
 
@@ -26,7 +27,7 @@ func NewMemory(opts ...func(interface{})) *Memory {
 	return _memory
 }
 
-func BuildMemory(opts ...func(interface{}))interface{}  {
+func BuildMemory(opts ...func(interface{})) interface{} {
 	return NewMemory(opts...)
 }
 func SetConfig(conf Conf) func(interface{}) {
@@ -115,4 +116,9 @@ func (c *Memory) GetOrSet(key string, ptrValue interface{}, f func() (value inte
 	}
 
 	return err
+}
+
+func (c *Memory) Exists(key string) bool {
+	_, found := c.obj.Get(key)
+	return found
 }

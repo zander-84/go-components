@@ -2,23 +2,22 @@ package CRedis
 
 import (
 	"github.com/go-redis/cache/v7"
+	cache2 "github.com/go-redis/cache/v7"
 	"github.com/go-redis/redis/v7"
 	"github.com/vmihailenco/msgpack/v4"
 	CCache "github.com/zander-84/go-components/libs/cache"
 	"reflect"
 	"time"
-	cache2 "github.com/go-redis/cache/v7"
-
 )
 
-
 type Redis struct {
-	obj  *redis.Client
-	conf Conf
+	obj   *redis.Client
+	conf  Conf
 	cache *RedisCache
 }
 
 var _ CCache.Cache = new(RedisCache)
+
 type RedisCache struct {
 	obj *cache.Codec
 }
@@ -26,7 +25,7 @@ type RedisCache struct {
 // *Redis
 func NewRedis(opts ...func(interface{})) *Redis {
 	var _rdb = new(Redis)
-	for _,opt := range opts{
+	for _, opt := range opts {
 		opt(_rdb)
 	}
 	_rdb.build()
@@ -72,9 +71,10 @@ func (c *Redis) build() {
 	}
 }
 
-func (c *Redis)Cache() *RedisCache  {
+func (c *Redis) Cache() *RedisCache {
 	return c.cache
 }
+
 /*_________________________________________________________________________________________*/
 //-- redis action
 //-- https://github.com/go-redis/redis
@@ -97,8 +97,6 @@ func (c *Redis) GetBytes(key string, value interface{}) ([]byte, error) {
 func (c *Redis) Dels(keys ...string) (err error) {
 	return c.obj.Del(keys...).Err()
 }
-
-
 
 //-- cache
 //-- https://github.com/go-redis/cache
@@ -140,4 +138,8 @@ func (c *RedisCache) GetOrSet(key string, ptrValue interface{}, f func() (value 
 		Func:       f,
 		Expiration: expires,
 	})
+}
+
+func (c *RedisCache) Exists(key string) bool {
+	return c.obj.Exists(key)
 }

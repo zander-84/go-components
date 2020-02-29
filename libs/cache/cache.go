@@ -16,6 +16,8 @@ type Cache interface {
 	//______________________________________________________________________
 	Obj() interface{}
 
+	Exists(key string) bool
+
 	// ptrValue必须是指针  获取到的是副本
 	//______________________________________________________________________
 	Get(key string, ptrValue interface{}) error
