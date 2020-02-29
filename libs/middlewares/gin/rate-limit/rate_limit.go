@@ -48,9 +48,15 @@ func (r *RateLimiter) Middleware() gin.HandlerFunc {
 
 		if httpError != nil {
 			CGinResponse.Resp.RateLimit(c)
+		}
+
+		if CGinResponse.HasResp(c) {
+			CGinResponse.HandleResponse(c, false)
 			c.Abort()
-		} else {
+			return
+		}else {
 			c.Next()
 		}
+
 	}
 }

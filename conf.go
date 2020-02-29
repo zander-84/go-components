@@ -29,9 +29,10 @@ var (
 
 type BasicConf struct {
 	Components struct {
+
 		Helper CHelper.Conf
 
-		Mysql struct {
+		Mysql struct{
 			Gorm CGrom.Conf
 		}
 
@@ -60,7 +61,7 @@ type BasicConf struct {
 }
 type Conf struct {
 	obj     *viper.Viper
-	paths   []string
+	paths    []string
 	dataPtr []interface{}
 	*BasicConf
 }
@@ -76,9 +77,11 @@ func NewConf(opts ...func(interface{})) *Conf {
 			opt(confObj)
 		}
 
+		confObj.obj.SetConfigName("config")
 		confObj.obj.SetConfigType("yml")
-		for _, path := range confObj.paths {
-			if len(path) > 0 {
+
+		for _,path:=range confObj.paths{
+			if len(path)>0{
 				confObj.obj.AddConfigPath(path)
 			}
 		}

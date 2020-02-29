@@ -33,11 +33,17 @@ func (s *Sign) Middleware() gin.HandlerFunc {
 		body, _ := ioutil.ReadAll(c.Request.Body)
 		if !s.checkSign(body, c.Request.Header.Get(s.conf.HeaderKey)) {
 			CGinResponse.Resp.Forbidden(c)
-			c.Abort()
 		}
 
-		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
-		c.Next()
+		if CGinResponse.HasResp(c) {
+			CGinResponse.HandleResponse(c, false)
+			c.Abort()
+			return
+		}else {
+			c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+			c.Next()
+		}
+
 	}
 }
 
