@@ -56,12 +56,12 @@ func (c *GinMiddleWare) Common() gin.HandlerFunc {
 
 //
 //______________________________________________________________________
-func (c *GinMiddleWare) InitJwt(user CGinJwt.User, conf CGinJwt.Conf) {
-	CGinJwt.New().Init(user, conf)
+func (c *GinMiddleWare) InitJwt(user CGinJwt.User, conf CGinJwt.Conf) *CGinJwt.Jwt {
+	return CGinJwt.New().Init(user, conf)
 }
 
-func (c *GinMiddleWare) Jwt() gin.HandlerFunc {
-	return CGinJwt.New().Middleware()
+func (c *GinMiddleWare) Jwt(j *CGinJwt.Jwt) gin.HandlerFunc {
+	return j.Middleware()
 }
 
 //

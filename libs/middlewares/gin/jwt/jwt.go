@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-var _jwt = new(Jwt)
-
 type Jwt struct {
 	conf           Conf
 	AuthMiddleware *jwt.GinJWTMiddleware
@@ -17,10 +15,10 @@ type Jwt struct {
 }
 
 func New() *Jwt {
-	return _jwt
+	return new(Jwt)
 }
 
-func (j *Jwt) Init(user User, conf Conf) {
+func (j *Jwt) Init(user User, conf Conf) *Jwt {
 	j.mutex.Lock()
 	defer j.mutex.Unlock()
 	var err error
@@ -40,7 +38,7 @@ func (j *Jwt) Init(user User, conf Conf) {
 		LogoutResponse:   user.LogoutResponse,
 		RefreshResponse:  user.RefreshResponse,
 		IdentityHandler:  user.IdentityHandler,
-		IdentityKey:      j.conf.IdentityKey,
+		IdentityKey:      j.conf.IdentityKey, // c.set(IdentityKey, )
 		TokenLookup:      j.conf.TokenLookup,
 		TokenHeadName:    j.conf.TokenHeadName,
 		TimeFunc:         time.Now,
@@ -60,6 +58,8 @@ func (j *Jwt) Init(user User, conf Conf) {
 	if err != nil {
 		log.Fatal("JWT Error:" + err.Error())
 	}
+
+	return j
 }
 
 func (j *Jwt) Middleware() gin.HandlerFunc {
