@@ -1,11 +1,12 @@
 package CHelper
 
 import (
-	 "github.com/zander-84/go-components/libs/helper/file"
+	"github.com/zander-84/go-components/libs/helper/file"
 	"github.com/zander-84/go-components/libs/helper/format"
+	"github.com/zander-84/go-components/libs/helper/request"
 	"github.com/zander-84/go-components/libs/helper/security"
 	"github.com/zander-84/go-components/libs/helper/time"
-	 "github.com/zander-84/go-components/libs/helper/type"
+	"github.com/zander-84/go-components/libs/helper/type"
 	"github.com/zander-84/go-components/libs/helper/unique"
 	"sync"
 )
@@ -21,6 +22,7 @@ type Helper struct {
 	file     interface{}
 	slice    interface{}
 	conv     interface{}
+	httpCli  interface{}
 }
 
 func NewHelper(opts ...func(interface{})) *Helper {
@@ -33,7 +35,7 @@ func NewHelper(opts ...func(interface{})) *Helper {
 	return _helper
 }
 
-func BulidHelper(opts ...func(interface{}))  interface{} {
+func BulidHelper(opts ...func(interface{})) interface{} {
 	return NewHelper(opts...)
 }
 
@@ -52,6 +54,7 @@ func (v *Helper) build() {
 	v.file = CHelperFile.NewFile()
 	v.slice = CHelperType.NewSlice()
 	v.conv = CHelperType.NewConv()
+	v.httpCli = CHelperRequest.NewHttpCli()
 }
 
 func (v *Helper) Unique() *CHelperUnique.Unique {
@@ -80,4 +83,8 @@ func (v *Helper) Slice() *CHelperType.Slice {
 
 func (v *Helper) Conv() *CHelperType.Conv {
 	return v.conv.(*CHelperType.Conv)
+}
+
+func (v *Helper) HttpCli() *CHelperRequest.HttpCli {
+	return v.httpCli.(*CHelperRequest.HttpCli)
 }
