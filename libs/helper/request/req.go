@@ -1,9 +1,12 @@
 package CHelperRequest
 
 import (
+	"encoding/json"
+	"github.com/tidwall/gjson"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -14,23 +17,39 @@ var client = &http.Client{}
 
 func NewHttpCli() interface{} { return new(HttpCli) }
 
-func (this *HttpCli) Do(method string, url string, reqFunc func(r *http.Request) *http.Request, bodyFunc func() io.Reader) ([]byte, error) {
-	var body io.Reader
-	if bodyFunc == nil {
-		body = nil
+func (this *HttpCli) DoForm(method string, url string, reqFunc func(r *http.Request), bodyValues url.Values) ([]byte, error) {
+	var bodyReader io.Reader
+	if bodyValues == nil {
+		bodyReader = nil
 	} else {
-		body = bodyFunc()
+		bodyReader = strings.NewReader(bodyValues.Encode())
 	}
 
-	req, err := http.NewRequest(strings.ToUpper(method), url, body)
+	return this.do(method, url, reqFunc, bodyReader)
+}
+
+func (this *HttpCli) DoJson(method string, url string, reqFunc func(r *http.Request), bodyValues map[string]string) ([]byte, error) {
+	var bodyReader io.Reader
+	if bodyValues == nil {
+		bodyReader = nil
+	} else {
+		bytesData, err := json.Marshal(bodyValues)
+		if err != nil {
+			return nil, err
+		}
+		bodyReader = strings.NewReader(string(bytesData))
+	}
+
+	return this.do(method, url, reqFunc, bodyReader)
+}
+
+func (this *HttpCli) do(method string, url string, reqFunc func(r *http.Request), bodyReader io.Reader) ([]byte, error) {
+	req, err := http.NewRequest(strings.ToUpper(method), url, bodyReader)
 	if err != nil {
 		return nil, err
 	}
 	if reqFunc != nil {
-		tmpreq := reqFunc(req)
-		if tmpreq != nil {
-			req = tmpreq
-		}
+		reqFunc(req)
 	}
 
 	resp, err := client.Do(req)
@@ -41,4 +60,8 @@ func (this *HttpCli) Do(method string, url string, reqFunc func(r *http.Request)
 		defer resp.Body.Close()
 		return ioutil.ReadAll(resp.Body)
 	}
+}
+
+func (this *HttpCli) JsonParse(json string) gjson.Result {
+	return gjson.Parse(json)
 }

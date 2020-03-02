@@ -44,6 +44,15 @@ func (r *defaultResponse) UserSpaceErr(c *gin.Context, data interface{}, debugs 
 	})
 }
 
+func (r *defaultResponse) ParamsErr(c *gin.Context, data interface{}, debugs ...interface{}) {
+	c.Set(Key, &defaultResponse{
+		Code:  StatusParamsErr,
+		Msg:   Codes[StatusParamsErr],
+		Data:  data,
+		Debug: debugs,
+	})
+}
+
 func (r *defaultResponse) RateLimit(c *gin.Context) {
 	c.Set(Key, &defaultResponse{
 		Code:  http.StatusTooManyRequests,
