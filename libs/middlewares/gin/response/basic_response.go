@@ -31,7 +31,7 @@ type Response interface {
 	SystemSpaceErr(c *gin.Context, debug interface{})
 
 	// 参数错误
-	ParamsErr(c *gin.Context, debug interface{})
+	ParamsErr(c *gin.Context, data interface{}, debugs ...interface{})
 
 	// 用户空间错误
 	UserSpaceErr(c *gin.Context, data interface{}, debugs ...interface{})
