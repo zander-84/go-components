@@ -41,11 +41,11 @@ func (c *GinMiddleWare) Ratelimiter() gin.HandlerFunc {
 //
 //______________________________________________________________________
 func (c *GinMiddleWare) InitResponse(debug bool) {
-	CGinResponse.Resp.Init(debug)
+	CGinResponse.MiddleResp.Init(debug)
 }
 
 func (c *GinMiddleWare) Response() gin.HandlerFunc {
-	return CGinResponse.Resp.Middleware()
+	return CGinResponse.MiddleResp.Middleware()
 }
 
 //

@@ -47,7 +47,9 @@ type Response interface {
 
 	// 自定义
 	Custom(c *gin.Context, code int, msg interface{}, data interface{}, debugs ...interface{})
+}
 
+type MiddleResponse interface {
 	Middleware() gin.HandlerFunc
 
 	Init(bool2 bool)
