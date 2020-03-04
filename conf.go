@@ -29,10 +29,9 @@ var (
 
 type BasicConf struct {
 	Components struct {
-
 		Helper CHelper.Conf
 
-		Mysql struct{
+		Mysql struct {
 			Gorm CGrom.Conf
 		}
 
@@ -61,7 +60,7 @@ type BasicConf struct {
 }
 type Conf struct {
 	obj     *viper.Viper
-	paths    []string
+	paths   []string
 	dataPtr []interface{}
 	*BasicConf
 }
@@ -80,8 +79,8 @@ func NewConf(opts ...func(interface{})) *Conf {
 		confObj.obj.SetConfigName("config")
 		confObj.obj.SetConfigType("yml")
 
-		for _,path:=range confObj.paths{
-			if len(path)>0{
+		for _, path := range confObj.paths {
+			if len(path) > 0 {
 				confObj.obj.AddConfigPath(path)
 			}
 		}
@@ -94,7 +93,7 @@ func NewConf(opts ...func(interface{})) *Conf {
 		if err := confObj.obj.Unmarshal(confObj.BasicConf); err != nil {
 			log.Fatal("组件配置文件反序列化错误" + err.Error())
 		} else {
-			//fmt.Printf("%# v\n", pretty.Formatter(confObj.BasicConf))
+			fmt.Printf("%# v\n", pretty.Formatter(confObj.BasicConf))
 		}
 
 		// 初始化其它配置文件
