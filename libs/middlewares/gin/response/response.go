@@ -26,6 +26,13 @@ func (r *defaultResponse) Success(c *gin.Context, data interface{}, debugs ...in
 	})
 }
 
+func (r *defaultResponse) SuccessAction(c *gin.Context) {
+	c.Set(Key, &defaultResponse{
+		Code: http.StatusOK,
+		Msg:  Codes[http.StatusOK],
+	})
+}
+
 func (r *defaultResponse) SystemSpaceErr(c *gin.Context, debug interface{}) {
 	c.Set(Key, &defaultResponse{
 		Code:  http.StatusInternalServerError,

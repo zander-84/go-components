@@ -27,6 +27,8 @@ type Response interface {
 	//成功
 	Success(c *gin.Context, data interface{}, debugs ...interface{})
 
+	SuccessAction(c *gin.Context)
+
 	// 系统空间错误
 	SystemSpaceErr(c *gin.Context, debug interface{})
 
