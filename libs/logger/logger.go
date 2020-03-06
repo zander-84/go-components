@@ -20,7 +20,6 @@ type Data struct {
 	Duration float64     //持续时间
 }
 
-
 // 日志 方法自行实现 hook
 type Logger interface {
 
@@ -31,7 +30,14 @@ type Logger interface {
 	Panic(data string)
 	Fatal(data string)
 
-	// 扩展版
+	// 来源版
+	DebugFrom(data string, from string)
+	InfoFrom(data string, from string)
+	ErrorFrom(data string, from string)
+	PanicFrom(data string, from string)
+	FatalFrom(data string, from string)
+
+	// 详情版
 	ExtendDebug(data Data)
 	ExtendInfo(data Data)
 	ExtendError(data Data)

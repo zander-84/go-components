@@ -144,6 +144,9 @@ func (l *ZapLog) Obj() interface{} {
 	return l.obj
 }
 
+//*______________________________________________________________________*/
+//__ 简版
+/*______________________________________________________________________*/
 func (l *ZapLog) Debug(data string) {
 	l.obj.Debug(data)
 }
@@ -164,6 +167,32 @@ func (l *ZapLog) Fatal(data string) {
 	l.obj.Fatal(data)
 }
 
+//*______________________________________________________________________*/
+//__ 来源版
+/*______________________________________________________________________*/
+func (l *ZapLog) DebugFrom(data string, from string) {
+	l.obj.Debug(data, zap.String(CLogger.FieldFrom, from))
+}
+
+func (l *ZapLog) InfoFrom(data string, from string) {
+	l.obj.Info(data, zap.String(CLogger.FieldFrom, from))
+}
+
+func (l *ZapLog) ErrorFrom(data string, from string) {
+	l.obj.Error(data, zap.String(CLogger.FieldFrom, from))
+}
+
+func (l *ZapLog) PanicFrom(data string, from string) {
+	l.obj.Panic(data, zap.String(CLogger.FieldFrom, from))
+}
+
+func (l *ZapLog) FatalFrom(data string, from string) {
+	l.obj.Fatal(data, zap.String(CLogger.FieldFrom, from))
+}
+
+//*______________________________________________________________________*/
+//__ 扩展板
+/*______________________________________________________________________*/
 func (l *ZapLog) ExtendDebug(data CLogger.Data) {
 	l.obj.Debug(
 		data.Msg,

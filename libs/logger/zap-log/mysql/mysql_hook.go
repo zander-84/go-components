@@ -11,15 +11,15 @@ import (
 
 type Log struct {
 	Id       int       `gorm:" primary_key ;type:bigint(9) unsigned AUTO_INCREMENT; not null; comment:'主键ID' "`
-	TraceId  string    `gorm:" index;type:varchar(100); not null; default:''; comment:'追踪id';"`
-	SpanId   string    `gorm:" index;type:varchar(100); not null; default:''; comment:'子id';"`
-	Level    string    `gorm:" index;type:varchar(255); not null; default:''; comment:'级别';"`
-	Msg      string    `gorm:" type:varchar(255); not null; default:''; comment:'消息';"`
-	From     string    `gorm:" index;type:varchar(100); not null; default:''; comment:'来源';"`
-	Duration float64   `gorm:" type:double unsigned; comment:'持续时间'"`
-	Uid      int       `gorm:" type:bigint(9) unsigned; comment:'用户ID' "`
-	Raw      string    `gorm:" type:text;  comment:'内容';"`
-	Ts       time.Time `gorm:" type:timestamp; comment:'日志记录时间';"`
+	TraceId  string    `gorm:""`
+	SpanId   string    `gorm:""`
+	Level    string    `gorm:""`
+	Msg      string    `gorm:""`
+	From     string    `gorm:""`
+	Duration float64   `gorm:""`
+	Uid      int       `gorm:""`
+	Raw      string    `gorm:""`
+	Ts       time.Time `gorm:""`
 }
 
 func (Log) TableName() string {
@@ -63,7 +63,6 @@ func (l *MysqlHook) Write(p []byte) (n int, err error) {
 	defer l.mu.Unlock()
 
 	db := l.Gdb
-	db.AutoMigrate(&Log{})
 
 	var data Fields
 	if err := json.Unmarshal(p, &data); err != nil {
@@ -71,7 +70,7 @@ func (l *MysqlHook) Write(p []byte) (n int, err error) {
 	}
 	ts, _ := time.Parse("2006-01-02 15:04:05", data.Ts)
 
-	if data.Raw == nil{
+	if data.Raw == nil {
 		data.Raw = ""
 	}
 
@@ -93,6 +92,7 @@ func (l *MysqlHook) Write(p []byte) (n int, err error) {
 	} else {
 		tableName = Log{}.TableName()
 	}
+
 	err = db.Table(tableName).Create(&logStruct).Error
 	n = len(p)
 	return n, err
