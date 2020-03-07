@@ -6,6 +6,7 @@ import (
 	"github.com/zander-84/go-components/libs/helper/request"
 	"github.com/zander-84/go-components/libs/helper/security"
 	"github.com/zander-84/go-components/libs/helper/time"
+	CHelperTransform "github.com/zander-84/go-components/libs/helper/transform"
 	"github.com/zander-84/go-components/libs/helper/type"
 	"github.com/zander-84/go-components/libs/helper/unique"
 	"sync"
@@ -15,14 +16,15 @@ type Helper struct {
 	conf Conf
 	once sync.Once
 
-	unique   interface{}
-	security interface{}
-	format   interface{}
-	timeZone interface{}
-	file     interface{}
-	slice    interface{}
-	conv     interface{}
-	httpCli  interface{}
+	unique    interface{}
+	security  interface{}
+	format    interface{}
+	timeZone  interface{}
+	file      interface{}
+	slice     interface{}
+	conv      interface{}
+	httpCli   interface{}
+	transform interface{}
 }
 
 func NewHelper(opts ...func(interface{})) *Helper {
@@ -55,6 +57,7 @@ func (v *Helper) build() {
 	v.slice = CHelperType.NewSlice()
 	v.conv = CHelperType.NewConv()
 	v.httpCli = CHelperRequest.NewHttpCli()
+	v.transform = CHelperTransform.NewTransform()
 }
 
 func (v *Helper) Unique() *CHelperUnique.Unique {
@@ -87,4 +90,8 @@ func (v *Helper) Conv() *CHelperType.Conv {
 
 func (v *Helper) HttpCli() *CHelperRequest.HttpCli {
 	return v.httpCli.(*CHelperRequest.HttpCli)
+}
+
+func (v *Helper) Transform() *CHelperTransform.Transform {
+	return v.transform.(*CHelperTransform.Transform)
 }

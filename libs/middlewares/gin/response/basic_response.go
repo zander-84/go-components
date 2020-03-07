@@ -30,7 +30,9 @@ type Response interface {
 	Success(c *gin.Context, data interface{}, debugs ...interface{})
 
 	SuccessAction(c *gin.Context)
-	ErrorAction(c *gin.Context)
+
+	// 简单错误
+	SimpleErr(c *gin.Context, data interface{})
 
 	// 系统空间错误
 	SystemSpaceErr(c *gin.Context, debug interface{})
