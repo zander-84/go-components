@@ -27,6 +27,7 @@ require (
 	github.com/tidwall/gjson v1.3.5
 	github.com/vmihailenco/msgpack/v4 v4.2.0
 	go.uber.org/zap v1.14.0
+	golang.org/x/text v0.3.2
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
