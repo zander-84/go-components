@@ -8,7 +8,8 @@ import (
 const (
 	Key = "resp"
 
-	StatusParamsErr = 10000
+	StatusParamsErr = 1000
+	StatusActionErr = 1001
 )
 
 var Codes = map[int]string{
@@ -21,6 +22,7 @@ var Codes = map[int]string{
 
 	// 自定义错误码
 	StatusParamsErr: "参数错误",
+	StatusActionErr: "错误",
 }
 
 type Response interface {
@@ -28,6 +30,7 @@ type Response interface {
 	Success(c *gin.Context, data interface{}, debugs ...interface{})
 
 	SuccessAction(c *gin.Context)
+	ErrorAction(c *gin.Context)
 
 	// 系统空间错误
 	SystemSpaceErr(c *gin.Context, debug interface{})

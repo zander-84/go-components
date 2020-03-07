@@ -133,7 +133,17 @@ func structTagMapJson(data interface{}, comment string, json string) map[string]
 	}
 
 	for i := 0; i < t.NumField(); i++ {
-		res[t.Field(i).Tag.Get(comment)] = t.Field(i).Tag.Get(json) //comment:json
+		if t.Field(i).Tag.Get(json) != "" {
+			res[t.Field(i).Tag.Get(comment)] = t.Field(i).Tag.Get(json) //comment:json
+		} else if t.Field(i).Tag.Get("json") != "" {
+			res[t.Field(i).Tag.Get(comment)] = t.Field(i).Tag.Get("json") //comment:json
+		} else if t.Field(i).Tag.Get("form") != "" {
+			res[t.Field(i).Tag.Get(comment)] = t.Field(i).Tag.Get("form") //comment:json
+		} else if t.Field(i).Tag.Get("xml") != "" {
+			res[t.Field(i).Tag.Get(comment)] = t.Field(i).Tag.Get("xml") //comment:json
+		} else if t.Field(i).Tag.Get("xml") != "" {
+			res[t.Field(i).Tag.Get(comment)] = t.Field(i).Tag.Get("xml") //comment:json
+		}
 	}
 	return res
 }

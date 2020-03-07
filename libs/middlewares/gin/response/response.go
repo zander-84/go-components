@@ -33,6 +33,13 @@ func (r *defaultResponse) SuccessAction(c *gin.Context) {
 	})
 }
 
+func (r *defaultResponse) ErrorAction(c *gin.Context) {
+	c.Set(Key, &defaultResponse{
+		Code: StatusActionErr,
+		Msg:  Codes[StatusActionErr],
+	})
+}
+
 func (r *defaultResponse) SystemSpaceErr(c *gin.Context, debug interface{}) {
 	c.Set(Key, &defaultResponse{
 		Code:  http.StatusInternalServerError,
