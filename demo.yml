@@ -78,3 +78,6 @@ components:
     maxWorkers: 10
     maxQueues: 100000000
 
+  global:
+    timeZone: Asia/Shanghai
+

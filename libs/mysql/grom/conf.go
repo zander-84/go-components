@@ -11,9 +11,10 @@ type Conf struct {
 	MaxOpenconns    int
 	ConnMaxLifetime int
 	Debug           bool
+	TimeZone        string
 }
 
-func (c *Conf) SetDefault() Conf{
+func (c *Conf) SetDefault() Conf {
 	c.SetDefaultBasic()
 	return *c
 }

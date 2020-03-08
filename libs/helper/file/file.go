@@ -7,22 +7,32 @@ import (
 	"time"
 )
 
-type File struct{}
+type File struct {
+	timezZone string
+}
 
-func NewFile() interface{} { return new(File) }
-
-func (this *File) Create(path string, fileName string) (*os.File,error) {
-	file, err := os.OpenFile(this.FullLogPath(path, fileName), os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
-	if err != nil {
-		return nil,err
+func NewFile(timezZone string) interface{} {
+	if timezZone == "" {
+		timezZone = "Asia/Shanghai"
 	}
 
-	return file,nil
+	this := new(File)
+	this.timezZone = timezZone
+	return this
+}
+
+func (this *File) Create(path string, fileName string) (*os.File, error) {
+	file, err := os.OpenFile(this.FullLogPath(path, fileName), os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
+	if err != nil {
+		return nil, err
+	}
+
+	return file, nil
 }
 
 func (this *File) OpenLogFile(path string, fileName string) error {
-	f,err:=this.Create(path,fileName)
-	if err!=nil{
+	f, err := this.Create(path, fileName)
+	if err != nil {
 		return err
 	}
 	defer f.Close()
@@ -36,6 +46,6 @@ func (this *File) FullLogPath(path string, fileName string) string {
 		fileName += ".log"
 	}
 
-	local, _ := time.LoadLocation("Asia/Shanghai")
+	local, _ := time.LoadLocation(this.timezZone)
 	return strings.TrimRight(path, "/") + "/" + time.Now().In(local).Format("2006-01-02") + "-" + fileName
 }

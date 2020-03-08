@@ -56,6 +56,10 @@ type BasicConf struct {
 		Cron CCron.Conf
 
 		Worker CWorker.Conf
+
+		Global struct {
+			TimeZone string
+		}
 	}
 }
 type Conf struct {
@@ -107,7 +111,7 @@ func NewConf(opts ...func(interface{})) *Conf {
 		confObj.obj.OnConfigChange(func(in fsnotify.Event) {
 			confObj.ReloadBasicConf()
 		})
-
+		confObj.setGlobal()
 	})
 	return confObj
 }
@@ -142,8 +146,20 @@ func (this *Conf) ReloadBasicConf() {
 		this.BasicConf = tmp
 		fmt.Printf("%# v\n", pretty.Formatter(confObj.BasicConf))
 	}
+	this.setGlobal()
 }
 
 func (this *Conf) Obj() interface{} {
 	return this.obj
+}
+
+func (this *Conf) setGlobal() {
+	timezone := this.Components.Global.TimeZone
+	if timezone == "" {
+		timezone = "Asia/Shanghai"
+	}
+
+	this.Components.Cron.TimeZone = timezone
+	this.Components.Helper.TimeZone = timezone
+	this.Components.Mysql.Gorm.TimeZone = timezone
 }

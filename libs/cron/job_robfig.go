@@ -7,11 +7,10 @@ import (
 )
 
 type robfigCrontab struct {
-	obj *cron.Cron
+	obj   *cron.Cron
 	conf  Conf
 	jobs  map[string]*Job
 	mutex sync.Mutex
-
 }
 
 func NewRobfigCrontab(opts ...func(interface{})) Crontab {
@@ -22,7 +21,7 @@ func NewRobfigCrontab(opts ...func(interface{})) Crontab {
 	this.build()
 	return this
 }
-func BuildRobfigCrontab(opts ...func(interface{}))interface{}  {
+func BuildRobfigCrontab(opts ...func(interface{})) interface{} {
 	return NewRobfigCrontab(opts...)
 }
 func SetConfig(conf Conf) func(interface{}) {
@@ -35,19 +34,19 @@ func SetConfig(conf Conf) func(interface{}) {
 
 func (this *robfigCrontab) build() {
 	this.jobs = make(map[string]*Job)
-	location, _ := time.LoadLocation(this.conf.Location, )
+	location, _ := time.LoadLocation(this.conf.TimeZone)
 	this.obj = cron.New(cron.WithLocation(location), cron.WithSeconds())
 }
 
-func (this *robfigCrontab) AddJob(job *Job) error{
+func (this *robfigCrontab) AddJob(job *Job) error {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
-	if _,ok:=this.jobs[job.ID];ok{
+	if _, ok := this.jobs[job.ID]; ok {
 		return ErrIDExist
 	}
 	// 添加job
 	id, err := this.obj.AddJob(job.Spec, job.Cmd)
-	if err==nil{
+	if err == nil {
 		job.Obj = this.obj.Entry(id)
 		this.jobs[job.ID] = job
 	}
@@ -55,39 +54,39 @@ func (this *robfigCrontab) AddJob(job *Job) error{
 }
 
 // 移除
-func (this *robfigCrontab) Remove(id string){
+func (this *robfigCrontab) Remove(id string) {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
-	if job,ok:=this.jobs["id"];ok{
-		entry:=job.Obj.(cron.Entry)
+	if job, ok := this.jobs["id"]; ok {
+		entry := job.Obj.(cron.Entry)
 		this.obj.Remove(entry.ID)
 		delete(this.jobs, id)
 	}
 }
 
 //
-func (this *robfigCrontab) Status() map[string]*Job{
+func (this *robfigCrontab) Status() map[string]*Job {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
 
 	for _, job := range this.jobs {
-		entry:=job.Obj.(cron.Entry)
+		entry := job.Obj.(cron.Entry)
 		job.Obj = this.obj.Entry(entry.ID)
 	}
 	return this.jobs
 }
-func (this *robfigCrontab) Start(){this.obj.Start()}
+func (this *robfigCrontab) Start() { this.obj.Start() }
 
-func (this *robfigCrontab) Stop(){this.obj.Stop()}
+func (this *robfigCrontab) Stop() { this.obj.Stop() }
 
-func (this *robfigCrontab) Restart(id string) error{
-	if job,ok:=this.jobs["id"];ok{
+func (this *robfigCrontab) Restart(id string) error {
+	if job, ok := this.jobs["id"]; ok {
 		this.Remove(id)
 		return this.AddJob(job)
 	}
 	return ErrID
 }
 
-func (this *robfigCrontab) Obj() interface{}{
+func (this *robfigCrontab) Obj() interface{} {
 	return this.obj
 }

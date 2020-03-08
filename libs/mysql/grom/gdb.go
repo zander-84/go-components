@@ -2,11 +2,11 @@ package CGrom
 
 import (
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/zander-84/go-components/libs/mysql"
 	"log"
 	"time"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 var _ CMysql.Mysql = new(Grom)
@@ -18,7 +18,7 @@ type Grom struct {
 
 func NewGrom(opts ...func(interface{})) *Grom {
 	gdb := new(Grom)
-	for _,opt := range(opts){
+	for _, opt := range opts {
 		opt(gdb)
 	}
 	gdb.build()
@@ -49,6 +49,20 @@ func (this *Grom) build() {
 	this.obj.DB().SetConnMaxLifetime(time.Duration(this.conf.ConnMaxLifetime) * time.Second)
 	this.obj.SingularTable(true)
 	this.obj.LogMode(this.conf.Debug)
+
+	// 设置时间
+	this.obj.SetNowFuncOverride(func() time.Time {
+		timezone := this.conf.TimeZone
+		if timezone == "" {
+			timezone = "Asia/Shanghai"
+		}
+		if location, err := time.LoadLocation(timezone); err != nil {
+			log.Fatalln("mysql timezone err")
+			return time.Now()
+		} else {
+			return time.Now().In(location)
+		}
+	})
 }
 
 func (this *Grom) Obj() interface{} {

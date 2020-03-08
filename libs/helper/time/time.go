@@ -13,9 +13,12 @@ type TimeZone struct {
 	once     sync.Once
 }
 
-func NewTimeZone() interface{} {
+func NewTimeZone(timezZone string) interface{} {
 	_timeZone.once.Do(func() {
-		_timeZone.location, _ = time.LoadLocation("Asia/Shanghai")
+		if timezZone == "" {
+			timezZone = "Asia/Shanghai"
+		}
+		_timeZone.location, _ = time.LoadLocation(timezZone)
 	})
 
 	return _timeZone
@@ -34,7 +37,6 @@ func (t *TimeZone) SetLocation(loc string) (err error) {
 func (t *TimeZone) Location() *time.Location {
 	return t.location
 }
-
 
 func (t *TimeZone) Now() time.Time {
 

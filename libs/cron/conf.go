@@ -1,16 +1,16 @@
 package CCron
 
 type Conf struct {
-	Location string
+	TimeZone string
 }
 
-func (c *Conf) SetDefault() Conf{
+func (c *Conf) SetDefault() Conf {
 	c.SetDefaultBasic()
 	return *c
 }
 
 func (c *Conf) SetDefaultBasic() {
-	if c.Location == ""{
-		c.Location = "Asia/Shanghai"
+	if c.TimeZone == "" {
+		c.TimeZone = "Asia/Shanghai"
 	}
 }
