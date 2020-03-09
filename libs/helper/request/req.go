@@ -18,7 +18,7 @@ var client = &http.Client{}
 
 func NewHttpCli() interface{} { return new(HttpCli) }
 
-func (this *HttpCli) DoForm(method string, url string, reqFunc func(r *http.Request), bodyValues url.Values) (http.Header, []byte, error) {
+func (this *HttpCli) DoValues(method string, url string, reqFunc func(r *http.Request), bodyValues url.Values) (http.Header, []byte, error) {
 	var bodyReader io.Reader
 	if bodyValues == nil {
 		bodyReader = nil
@@ -29,7 +29,7 @@ func (this *HttpCli) DoForm(method string, url string, reqFunc func(r *http.Requ
 	return this.Do(method, url, reqFunc, bodyReader)
 }
 
-func (this *HttpCli) DoJson(method string, url string, reqFunc func(r *http.Request), bodyValues map[string]string) (http.Header, []byte, error) {
+func (this *HttpCli) DoMap(method string, url string, reqFunc func(r *http.Request), bodyValues map[string]string) (http.Header, []byte, error) {
 	var bodyReader io.Reader
 	if bodyValues == nil {
 		bodyReader = nil
