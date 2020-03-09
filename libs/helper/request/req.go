@@ -25,7 +25,7 @@ func (this *HttpCli) DoForm(method string, url string, reqFunc func(r *http.Requ
 		bodyReader = strings.NewReader(bodyValues.Encode())
 	}
 
-	return this.do(method, url, reqFunc, bodyReader)
+	return this.Do(method, url, reqFunc, bodyReader)
 }
 
 func (this *HttpCli) DoJson(method string, url string, reqFunc func(r *http.Request), bodyValues map[string]string) ([]byte, error) {
@@ -40,10 +40,10 @@ func (this *HttpCli) DoJson(method string, url string, reqFunc func(r *http.Requ
 		bodyReader = strings.NewReader(string(bytesData))
 	}
 
-	return this.do(method, url, reqFunc, bodyReader)
+	return this.Do(method, url, reqFunc, bodyReader)
 }
 
-func (this *HttpCli) do(method string, url string, reqFunc func(r *http.Request), bodyReader io.Reader) ([]byte, error) {
+func (this *HttpCli) Do(method string, url string, reqFunc func(r *http.Request), bodyReader io.Reader) ([]byte, error) {
 	req, err := http.NewRequest(strings.ToUpper(method), url, bodyReader)
 	if err != nil {
 		return nil, err
