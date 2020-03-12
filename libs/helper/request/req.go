@@ -14,8 +14,6 @@ import (
 type HttpCli struct {
 }
 
-var client = &http.Client{}
-
 func NewHttpCli() interface{} { return new(HttpCli) }
 
 func (this *HttpCli) DoValues(method string, url string, reqFunc func(r *http.Request), bodyValues url.Values) (http.Header, []byte, error) {
@@ -45,6 +43,8 @@ func (this *HttpCli) DoMap(method string, url string, reqFunc func(r *http.Reque
 }
 
 func (this *HttpCli) Do(method string, url string, reqFunc func(r *http.Request), bodyReader io.Reader) (http.Header, []byte, error) {
+	var client = &http.Client{}
+
 	req, err := http.NewRequest(strings.ToUpper(method), url, bodyReader)
 	if err != nil {
 		return nil, nil, err
@@ -52,6 +52,10 @@ func (this *HttpCli) Do(method string, url string, reqFunc func(r *http.Request)
 	if reqFunc != nil {
 		reqFunc(req)
 	}
+	req.Close = true
+
+	//It looks like the that server (Apache 1.3, wow!) is serving up a truncated gzip response. If you explicitly request the identity encoding (preventing the Go transport from adding gzip itself), you won't get the ErrUnexpectedEOF:
+	//req.Header.Add("Accept-Encoding", "identity")
 
 	resp, err := client.Do(req)
 
@@ -59,6 +63,7 @@ func (this *HttpCli) Do(method string, url string, reqFunc func(r *http.Request)
 		return nil, nil, err
 	} else {
 		defer resp.Body.Close()
+
 		body, err := ioutil.ReadAll(resp.Body)
 		return resp.Header, body, err
 	}
@@ -69,13 +74,14 @@ func (this *HttpCli) JsonParse(json string) gjson.Result {
 }
 
 var ErrNoRedirect = errors.New("Don't redirect!")
-var clientNoRedirect = &http.Client{
-	CheckRedirect: func(req *http.Request, via []*http.Request) error {
-		return ErrNoRedirect
-	},
-}
 
 func (this *HttpCli) DoOrigin(method string, url string, reqFunc func(r *http.Request), bodyReader io.Reader) (*http.Response, error) {
+	var clientNoRedirect = &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return ErrNoRedirect
+		},
+	}
+
 	req, err := http.NewRequest(strings.ToUpper(method), url, bodyReader)
 	if err != nil {
 		return nil, err
