@@ -1,6 +1,9 @@
 package CGinResponse
 
-import "github.com/gin-gonic/gin"
+import (
+	"fmt"
+	"github.com/gin-gonic/gin"
+)
 
 var MiddleResp = &middleResponse{}
 
@@ -24,7 +27,7 @@ func (r *middleResponse) Middleware() gin.HandlerFunc {
 		//____ 接受panic
 		defer func() {
 			if rec := recover(); rec != nil {
-				Resp.SystemSpaceErr(c, rec)
+				Resp.SystemSpaceErr(c, fmt.Sprintf("%s\n", rec))
 				HandleResponse(c, conf.Debug)
 				c.Abort()
 				return
