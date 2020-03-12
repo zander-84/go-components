@@ -24,11 +24,15 @@ type Oss struct {
 }
 
 func New(conf Conf) *Oss {
+	_oss.construct(conf)
 	return _oss
 }
 
 func (v *Oss) construct(conf Conf) *Oss {
 	v.conf = conf
+	if v.conf.Dir != "" {
+		v.conf.Dir = strings.Trim(v.conf.Dir, "/") + "/"
+	}
 	return v
 }
 
@@ -76,7 +80,6 @@ func (v *Oss) UploadFileString(objectName string, file string) error {
 	if err != nil {
 		return err
 	}
-
 	return bucket.PutObject(objectName, strings.NewReader(file))
 }
 

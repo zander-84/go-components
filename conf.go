@@ -2,7 +2,6 @@ package C
 
 import (
 	"fmt"
-	"github.com/fsnotify/fsnotify"
 	"github.com/kr/pretty"
 	"github.com/spf13/viper"
 	CAli "github.com/zander-84/go-components/libs/ali"
@@ -108,9 +107,9 @@ func NewConf(opts ...func(interface{})) *Conf {
 			fmt.Printf("%# v\n", pretty.Formatter(config))
 		}
 
-		confObj.obj.OnConfigChange(func(in fsnotify.Event) {
-			confObj.ReloadBasicConf()
-		})
+		//confObj.obj.OnConfigChange(func(in fsnotify.Event) {
+		//	confObj.ReloadBasicConf()
+		//})
 		confObj.setGlobal()
 	})
 	return confObj
