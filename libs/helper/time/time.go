@@ -48,9 +48,9 @@ func (t *TimeZone) Format(layout string) string {
 }
 
 // "01/02/2006", "02/08/2015"
-func (t *TimeZone) Parse(layout string, sourceTime string) time.Time {
-	t1, _ := time.Parse(layout, sourceTime)
-	return t1.In(t.location)
+func (t *TimeZone) Parse(layout string, sourceTime string) (time.Time, error) {
+	t1, err := time.ParseInLocation(layout, sourceTime, t.location)
+	return t1.In(t.location), err
 }
 
 func (t *TimeZone) Year() string {
