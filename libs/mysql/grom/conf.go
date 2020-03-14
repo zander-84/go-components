@@ -1,17 +1,18 @@
 package CGrom
 
 type Conf struct {
-	Port            string
-	User            string
-	Pwd             string
-	Host            string
-	Database        string
-	Charset         string
-	MaxIdleconns    int //MaxIdleconns>=MaxOpenconns
-	MaxOpenconns    int
-	ConnMaxLifetime int
-	Debug           bool
-	TimeZone        string
+	Port                string
+	User                string
+	Pwd                 string
+	Host                string
+	Database            string
+	Charset             string
+	MaxIdleconns        int //MaxIdleconns>=MaxOpenconns
+	MaxOpenconns        int
+	ConnMaxLifetime     int
+	Debug               bool
+	TimeZone            string
+	RemoveSomeCallbacks bool
 }
 
 func (c *Conf) SetDefault() Conf {

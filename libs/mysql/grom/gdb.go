@@ -63,6 +63,14 @@ func (this *Grom) build() {
 			return time.Now().In(location)
 		}
 	})
+
+	if this.conf.RemoveSomeCallbacks {
+		this.obj.Callback().Create().Remove("gorm:save_before_associations")
+		this.obj.Callback().Create().Remove("gorm:force_reload_after_create")
+		this.obj.Callback().Create().Remove("gorm:save_after_associations")
+		this.obj.Callback().Update().Remove("gorm:save_before_associations")
+		this.obj.Callback().Update().Remove("gorm:save_after_associations")
+	}
 }
 
 func (this *Grom) Obj() interface{} {
