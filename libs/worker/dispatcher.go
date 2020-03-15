@@ -17,7 +17,7 @@ type dispatcher struct {
 	idleWorkers     int64        // 空闲工人
 	allowIdleNum    int64        // 允许最大空闲数
 	optimizeWorkers int32        // 空值增加或者减少工人  用int代替bool
-	limitQ          chan bool     // 最大限制
+	limitQ          chan bool    // 最大限制
 	priorityQ       CQueue.Queue // 有限队列
 	dispatchQ       chan Job     // 真正任务派发队列
 	conf            Conf
@@ -80,8 +80,8 @@ func (this *dispatcher) dispatch() {
 				}
 			}
 
-		//一分钟 后减少 工人数
-		case <-time.After(time.Minute):
+		//3分钟 后减少 工人数
+		case <-time.After(3 * time.Minute):
 			go this.reduceWorker()
 		}
 	}
