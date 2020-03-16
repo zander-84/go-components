@@ -25,18 +25,7 @@ func NewHttpCli() interface{} {
 }
 
 func (this *HttpCli) DoValues(method string, url string, reqFunc func(r *http.Request), bodyValues url.Values) (http.Header, []byte, error) {
-	var h http.Header
-	var b []byte
-	var err error
-
-	for i := 0; i < this.Attempt; i++ {
-		h, b, err = this.doValues(method, url, reqFunc, bodyValues)
-		if err != nil {
-			break
-		}
-	}
-
-	return h, b, err
+	return this.doValues(method, url, reqFunc, bodyValues)
 }
 
 func (this *HttpCli) doValues(method string, url string, reqFunc func(r *http.Request), bodyValues url.Values) (http.Header, []byte, error) {
@@ -51,18 +40,7 @@ func (this *HttpCli) doValues(method string, url string, reqFunc func(r *http.Re
 }
 
 func (this *HttpCli) DoMap(method string, url string, reqFunc func(r *http.Request), bodyValues map[string]string) (http.Header, []byte, error) {
-	var h http.Header
-	var b []byte
-	var err error
-
-	for i := 0; i < this.Attempt; i++ {
-		h, b, err = this.doMap(method, url, reqFunc, bodyValues)
-		if err != nil {
-			break
-		}
-	}
-
-	return h, b, err
+	return this.doMap(method, url, reqFunc, bodyValues)
 }
 
 func (this *HttpCli) doMap(method string, url string, reqFunc func(r *http.Request), bodyValues map[string]string) (http.Header, []byte, error) {
