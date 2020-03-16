@@ -282,7 +282,7 @@ func (v *Oss) GetPrefix() string {
 //______________________________________________________________________
 func (v *Oss) GetPrefixById(uid string) string {
 	now := time.Now()
-	return strings.Trim(fmt.Sprintf("%s/%s/%s/%s/", strings.Trim(v.conf.Dir, "/"), uid, now.Format("200601"), now.Format("02")), "/") + "/"
+	return strings.Trim(fmt.Sprintf("%s/user/%s/%s/%s/", strings.Trim(v.conf.Dir, "/"), uid, now.Format("200601"), now.Format("02")), "/") + "/"
 }
 
 // 获取新的完整名字
