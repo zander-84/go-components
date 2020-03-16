@@ -3,6 +3,7 @@ package CHelperRequest
 import (
 	"encoding/json"
 	"errors"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/tidwall/gjson"
 	"io"
 	"io/ioutil"
@@ -106,10 +107,6 @@ func (this *HttpCli) Do(method string, url string, reqFunc func(r *http.Request)
 	}
 }
 
-func (this *HttpCli) JsonParse(json string) gjson.Result {
-	return gjson.Parse(json)
-}
-
 var ErrNoRedirect = errors.New("Don't redirect!")
 
 func (this *HttpCli) DoOrigin(method string, url string, reqFunc func(r *http.Request), bodyReader io.Reader) (*http.Response, error) {
@@ -128,4 +125,18 @@ func (this *HttpCli) DoOrigin(method string, url string, reqFunc func(r *http.Re
 	}
 
 	return clientNoRedirect.Do(req)
+}
+
+func (this *HttpCli) JsonParse(json string) gjson.Result {
+	return gjson.Parse(json)
+}
+
+func (this *HttpCli) GetUrlForHtmlParse(url string) (*goquery.Document, error) {
+	res, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	defer res.Body.Close()
+	return goquery.NewDocumentFromReader(res.Body)
 }
