@@ -39,8 +39,11 @@ func (t *TimeZone) Location() *time.Location {
 }
 
 func (t *TimeZone) Now() time.Time {
-
 	return time.Now().In(t.location)
+}
+
+func (t *TimeZone) LocationNow(src time.Time) time.Time {
+	return src.In(t.location)
 }
 
 func (t *TimeZone) Format(layout string) string {
