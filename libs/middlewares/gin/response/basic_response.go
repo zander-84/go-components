@@ -32,7 +32,7 @@ type Response interface {
 	SuccessAction(c *gin.Context)
 
 	// 简单错误
-	SimpleErr(c *gin.Context, data interface{})
+	SimpleErr(c *gin.Context, data string)
 
 	// 系统空间错误
 	SystemSpaceErr(c *gin.Context, debug interface{})

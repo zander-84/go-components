@@ -33,7 +33,7 @@ func (r *defaultResponse) SuccessAction(c *gin.Context) {
 	})
 }
 
-func (r *defaultResponse) SimpleErr(c *gin.Context, data interface{}) {
+func (r *defaultResponse) SimpleErr(c *gin.Context, data string) {
 	c.Set(Key, &defaultResponse{
 		Code: StatusActionErr,
 		Msg:  Codes[StatusActionErr],
