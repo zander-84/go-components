@@ -59,6 +59,7 @@ func HasResp(c *gin.Context) bool {
 func HandleResponse(c *gin.Context, debug bool) {
 	if data, ok := c.Get(Key); ok {
 		if data2, ok2 := data.(*defaultResponse); ok2 {
+			c.Set(Key, nil)
 			body := gin.H{
 				"code": data2.Code,
 				"msg":  data2.Msg,

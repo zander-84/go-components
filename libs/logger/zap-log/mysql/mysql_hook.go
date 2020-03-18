@@ -10,16 +10,16 @@ import (
 )
 
 type Log struct {
-	Id       int       `gorm:" primary_key ;type:bigint(9) unsigned AUTO_INCREMENT; not null; comment:'主键ID' "`
-	TraceId  string    `gorm:""`
-	SpanId   string    `gorm:""`
-	Level    string    `gorm:""`
-	Msg      string    `gorm:""`
-	From     string    `gorm:""`
-	Duration float64   `gorm:""`
-	Uid      int       `gorm:""`
-	Raw      string    `gorm:""`
-	Ts       time.Time `gorm:""`
+	Id       int       `json:"id,omitempty" gorm:" primary_key ;type:bigint(9) unsigned AUTO_INCREMENT; not null; comment:'主键ID' "`
+	TraceId  string    `json:"trace_id,omitempty" gorm:""`
+	SpanId   string    `json:"span_id,omitempty" gorm:""`
+	Level    string    `json:"level,omitempty" gorm:""`
+	Msg      string    `json:"msg,omitempty" gorm:""`
+	From     string    `json:"from,omitempty" gorm:""`
+	Duration float64   `json:"duration,omitempty" gorm:""`
+	Uid      int       `json:"uid,omitempty" gorm:""`
+	Raw      string    `json:"raw,omitempty" gorm:""`
+	Ts       time.Time `json:"ts,omitempty" gorm:""`
 }
 
 func (Log) TableName() string {
