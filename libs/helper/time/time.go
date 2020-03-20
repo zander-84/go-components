@@ -50,6 +50,13 @@ func (t *TimeZone) Format(layout string) string {
 	return t.Now().Format(layout) //"2006-01-02 15:04:05"
 }
 
+func (t *TimeZone) FormatSimple(timer time.Time) string {
+	if timer.IsZero() {
+		return ""
+	}
+	return timer.Format("2006-01-02 15:04:05") //"2006-01-02 15:04:05"
+}
+
 // "01/02/2006", "02/08/2015"
 func (t *TimeZone) Parse(layout string, sourceTime string) (time.Time, error) {
 	t1, err := time.ParseInLocation(layout, sourceTime, t.location)

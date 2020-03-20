@@ -26,6 +26,23 @@ func (Log) TableName() string {
 	return "log"
 }
 
+func (this *Log) MarshalJSON() ([]byte, error) {
+	data := map[string]interface{}{
+		"id":       this.Id,
+		"trace_id": this.TraceId,
+		"span_id":  this.SpanId,
+		"level":    this.Level,
+		"msg":      this.Msg,
+		"from":     this.From,
+		"duration": this.Duration,
+		"uid":      this.Uid,
+		"raw":      this.Raw,
+		"ts":       this.Ts,
+	}
+
+	return json.Marshal(data)
+}
+
 type MysqlHook struct {
 	TableName string
 	Gdb       *gorm.DB
