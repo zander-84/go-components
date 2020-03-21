@@ -280,6 +280,13 @@ func (v *Oss) GetPrefix() string {
 
 // 获取文件前缀
 //______________________________________________________________________
+func (v *Oss) GetPrefixByDir(dir string) string {
+	now := time.Now()
+	return strings.Trim(fmt.Sprintf("%s/%s/%s/%s/", strings.Trim(v.conf.Dir, "/"), strings.Trim(dir, "/"), now.Format("200601"), now.Format("02")), "/") + "/"
+}
+
+// 获取文件前缀
+//______________________________________________________________________
 func (v *Oss) GetPrefixById(uid string) string {
 	now := time.Now()
 	return strings.Trim(fmt.Sprintf("%s/user/%s/%s/", strings.Trim(v.conf.Dir, "/"), uid, now.Format("200601")), "/") + "/"
