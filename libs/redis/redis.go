@@ -2,7 +2,6 @@ package CRedis
 
 import (
 	"github.com/go-redis/cache/v7"
-	cache2 "github.com/go-redis/cache/v7"
 	"github.com/go-redis/redis/v7"
 	"github.com/vmihailenco/msgpack/v4"
 	CCache "github.com/zander-84/go-components/libs/cache"
@@ -43,25 +42,25 @@ func SetConfig(conf Conf) func(interface{}) {
 	}
 }
 
-func (c *Redis) construct(conf Conf) *Redis {
-	c.conf = conf
-	c.conf.SetDefault()
-	c.build()
-	return c
+func (this *Redis) construct(conf Conf) *Redis {
+	this.conf = conf
+	this.conf.SetDefault()
+	this.build()
+	return this
 }
 
-func (c *Redis) build() {
-	c.obj = redis.NewClient(&redis.Options{
-		Addr:         c.conf.Addr,
-		Password:     c.conf.Password,
-		DB:           c.conf.Db,
-		PoolSize:     c.conf.PoolSize,
-		IdleTimeout:  time.Duration(c.conf.IdleTimeout) * time.Second,
-		MinIdleConns: c.conf.MinIdle,
+func (this *Redis) build() {
+	this.obj = redis.NewClient(&redis.Options{
+		Addr:         this.conf.Addr,
+		Password:     this.conf.Password,
+		DB:           this.conf.Db,
+		PoolSize:     this.conf.PoolSize,
+		IdleTimeout:  time.Duration(this.conf.IdleTimeout) * time.Second,
+		MinIdleConns: this.conf.MinIdle,
 	})
-	c.cache = new(RedisCache)
-	c.cache.obj = &cache.Codec{
-		Redis: c.obj,
+	this.cache = new(RedisCache)
+	this.cache.obj = &cache.Codec{
+		Redis: this.obj,
 		Marshal: func(v interface{}) ([]byte, error) {
 			return msgpack.Marshal(v)
 		},
@@ -71,68 +70,86 @@ func (c *Redis) build() {
 	}
 }
 
-func (c *Redis) Cache() *RedisCache {
-	return c.cache
+func (this *Redis) Cache() *RedisCache {
+	return this.cache
 }
 
 /*_________________________________________________________________________________________*/
 //-- redis action
 //-- https://github.com/go-redis/redis
 /*_________________________________________________________________________________________*/
-func (c *Redis) Obj() *redis.Client {
-	return c.obj
+func (this *Redis) Obj() *redis.Client {
+	return this.obj
 }
-func (c *Redis) SetString(key string, str string, expires time.Duration) (err error) {
-	return c.obj.Set(key, str, expires).Err()
-}
-
-func (c *Redis) GetString(key string, value interface{}) (string, error) {
-	return c.obj.Get(key).Result()
+func (this *Redis) SetString(key string, str string, expires time.Duration) (err error) {
+	return this.obj.Set(key, str, expires).Err()
 }
 
-func (c *Redis) GetBytes(key string, value interface{}) ([]byte, error) {
-	return c.obj.Get(key).Bytes()
+func (this *Redis) GetString(key string, value interface{}) (string, error) {
+	return this.obj.Get(key).Result()
 }
 
-func (c *Redis) Dels(keys ...string) (err error) {
-	return c.obj.Del(keys...).Err()
+func (this *Redis) GetBytes(key string, value interface{}) ([]byte, error) {
+	return this.obj.Get(key).Bytes()
+}
+
+func (this *Redis) Dels(keys ...string) (err error) {
+	return this.obj.Del(keys...).Err()
+}
+
+func (this *Redis) TryLockWithTimeout(identify string, duration time.Duration) (bool, error) {
+	return this.obj.SetNX(identify, true, duration).Result()
+}
+
+func (this *Redis) TryLockWithWaiting(identify string, duration time.Duration, waitTime int) (bool, error) {
+	for i := 0; i < waitTime; i++ {
+		ok, err := this.obj.SetNX(identify, true, duration).Result()
+		if err != nil {
+			return false, err
+		}
+		if ok {
+			return true, nil
+		}
+		time.Sleep(time.Second)
+	}
+	return false, nil
 }
 
 //-- cache
 //-- https://github.com/go-redis/cache
 /*_________________________________________________________________________________________*/
-func (c *RedisCache) Obj() interface{} {
-	return c.obj
+func (this *RedisCache) Obj() interface{} {
+	return this.obj
 }
 
-func (c *RedisCache) Get(key string, ptrValue interface{}) (err error) {
+func (this *RedisCache) Get(key string, ptrValue interface{}) (err error) {
 	v := reflect.ValueOf(ptrValue)
 	if v.Type().Kind() != reflect.Ptr {
 		return CCache.ErrInvalidValue
 	}
 
-	return c.obj.Get(key, ptrValue)
+	return this.obj.Get(key, ptrValue)
 }
 
-func (c *RedisCache) Set(key string, value interface{}, expires time.Duration) (err error) {
-	return c.obj.Set(&cache2.Item{
+func (this *RedisCache) Set(key string, value interface{}, expires time.Duration) (err error) {
+	return this.obj.Set(&cache.Item{
 		Key:        key,
 		Object:     value,
 		Expiration: expires,
 	})
 }
 
-func (c *RedisCache) Delete(key string) (err error) {
-	return c.obj.Delete(key)
+func (this *RedisCache) Delete(key string) (err error) {
+	return this.obj.Delete(key)
 }
 
-func (c *RedisCache) GetOrSet(key string, ptrValue interface{}, f func() (value interface{}, err error), expires time.Duration) (err error) {
+func (this *RedisCache) GetOrSet(key string, ptrValue interface{}, f func() (value interface{}, err error), expires time.Duration) (err error) {
 	v := reflect.ValueOf(ptrValue)
 	if v.Type().Kind() != reflect.Ptr {
 		return CCache.ErrInvalidValue
 	}
 
-	return c.obj.Once(&cache2.Item{
+	return this.obj.Once(&cache.Item{
 		Key:        key,
 		Object:     ptrValue,
 		Func:       f,
@@ -140,6 +157,6 @@ func (c *RedisCache) GetOrSet(key string, ptrValue interface{}, f func() (value 
 	})
 }
 
-func (c *RedisCache) Exists(key string) bool {
-	return c.obj.Exists(key)
+func (this *RedisCache) Exists(key string) bool {
+	return this.obj.Exists(key)
 }

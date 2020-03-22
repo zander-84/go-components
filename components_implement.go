@@ -11,6 +11,7 @@ import (
 	"github.com/zander-84/go-components/libs/middlewares"
 	"github.com/zander-84/go-components/libs/mysql"
 	"github.com/zander-84/go-components/libs/nsq"
+	CRedis "github.com/zander-84/go-components/libs/redis"
 	"github.com/zander-84/go-components/libs/validate"
 	"github.com/zander-84/go-components/libs/worker"
 )
@@ -47,6 +48,8 @@ type Components interface {
 
 	// 获取缓存
 	Cache() CCache.Cache
+
+	Redis() *CRedis.Redis
 
 	// 获取内存缓存
 	Memory() CCache.Cache

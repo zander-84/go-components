@@ -3,16 +3,19 @@ package CHelperRequest
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/tidwall/gjson"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"strings"
 )
 
 var Attempt = 2
+var Debug = false
 
 type HttpCli struct {
 	Attempt int
@@ -39,11 +42,11 @@ func (this *HttpCli) doValues(method string, url string, reqFunc func(r *http.Re
 	return this.Do(method, url, reqFunc, bodyReader)
 }
 
-func (this *HttpCli) DoMap(method string, url string, reqFunc func(r *http.Request), bodyValues map[string]string) (http.Header, []byte, error) {
+func (this *HttpCli) DoMap(method string, url string, reqFunc func(r *http.Request), bodyValues map[string]interface{}) (http.Header, []byte, error) {
 	return this.doMap(method, url, reqFunc, bodyValues)
 }
 
-func (this *HttpCli) doMap(method string, url string, reqFunc func(r *http.Request), bodyValues map[string]string) (http.Header, []byte, error) {
+func (this *HttpCli) doMap(method string, url string, reqFunc func(r *http.Request), bodyValues map[string]interface{}) (http.Header, []byte, error) {
 	var bodyReader io.Reader
 	if bodyValues == nil {
 		bodyReader = nil
@@ -72,6 +75,11 @@ func (this *HttpCli) Do(method string, url string, reqFunc func(r *http.Request)
 
 	//It looks like the that server (Apache 1.3, wow!) is serving up a truncated gzip response. If you explicitly request the identity encoding (preventing the Go transport from adding gzip itself), you won't get the ErrUnexpectedEOF:
 	//req.Header.Add("Accept-Encoding", "identity")
+
+	if Debug {
+		dump, _ := httputil.DumpRequest(req, true)
+		fmt.Println(string(dump))
+	}
 
 	resp, err := client.Do(req)
 
