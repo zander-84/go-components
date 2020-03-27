@@ -144,6 +144,11 @@ func (this *Rbac) GetRolePages(role string) (pages []string, err error) {
 	return this.Obj.GetRolesForUser(role)
 }
 
+// 获取所有角色
+func (this *Rbac) GetRoles() (pages []string) {
+	return this.Obj.GetAllRoles()
+}
+
 func (this *Rbac) IsRoot(name string) error {
 	if name == "root" {
 		return errors.New("Name Can't  root")
