@@ -2,6 +2,8 @@ package CGin
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	CCasbin "github.com/zander-84/go-components/libs/middlewares/gin/casbin"
 	"github.com/zander-84/go-components/libs/middlewares/gin/common"
 	"github.com/zander-84/go-components/libs/middlewares/gin/cors"
 	"github.com/zander-84/go-components/libs/middlewares/gin/jwt"
@@ -72,4 +74,14 @@ func (c *GinMiddleWare) InitSign(conf CGinSign.Conf) {
 
 func (c *GinMiddleWare) Sign() gin.HandlerFunc {
 	return CGinSign.New().Middleware()
+}
+
+//
+//______________________________________________________________________
+func (c *GinMiddleWare) InitRbac(model string, db *gorm.DB) *CCasbin.Rbac {
+	return CCasbin.New().Init(model, db)
+}
+
+func (c *GinMiddleWare) Rbac(r *CCasbin.Rbac) gin.HandlerFunc {
+	return r.Middleware()
 }
