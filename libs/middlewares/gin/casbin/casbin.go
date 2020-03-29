@@ -12,7 +12,8 @@ import (
 )
 
 type Rbac struct {
-	Obj *casbin.Enforcer
+	mysql *gorm.DB
+	Obj   *casbin.Enforcer
 }
 
 func New() *Rbac {
@@ -20,6 +21,7 @@ func New() *Rbac {
 }
 
 func (this *Rbac) Init(model string, db *gorm.DB) *Rbac {
+	this.mysql = db
 	if model == "" {
 		model =
 			`
@@ -146,9 +148,11 @@ func (this *Rbac) GetRolePages(role string) (pages []string, err error) {
 	return this.Obj.GetRolesForUser(role)
 }
 
-// 获取所有角色
-func (this *Rbac) GetRoles() (pages []string) {
-	return this.Obj.GetAllRoles()
+// 获取所有角色 用户
+func (this *Rbac) GetRoles() (pages []string, err error) {
+	var data []string
+	err = this.mysql.Table("casbin_rule").Where("p_type = ?", "g").Group("v0").Pluck("v0", &data).Error
+	return data, err
 }
 
 func (this *Rbac) IsRoot(name string) error {
