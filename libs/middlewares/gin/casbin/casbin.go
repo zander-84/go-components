@@ -55,10 +55,8 @@ func (this *Rbac) Middleware() gin.HandlerFunc {
 			CGinResponse.Resp.Forbidden(c)
 		} else {
 			roleStr := role.(string)
-			if roleStr != "root" {
-				if ok, err := this.Obj.EnforceSafe(roleStr, c.FullPath(), strings.ToUpper(c.Request.Method)); !ok || err != nil {
-					CGinResponse.Resp.Forbidden(c)
-				}
+			if ok, err := this.Obj.EnforceSafe(roleStr, c.FullPath(), strings.ToUpper(c.Request.Method)); !ok || err != nil {
+				CGinResponse.Resp.Forbidden(c)
 			}
 		}
 
