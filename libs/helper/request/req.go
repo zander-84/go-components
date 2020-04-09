@@ -126,3 +126,11 @@ func (this *HttpCli) GetUrlForHtmlParse(url string) (*goquery.Document, error) {
 	defer res.Body.Close()
 	return goquery.NewDocumentFromReader(res.Body)
 }
+
+func (this *HttpCli) MapStr2Body(data map[string]string) string {
+	var res string
+	for key, val := range data {
+		res = res + key + "=" + val + "&"
+	}
+	return strings.Trim(res, "&")
+}
