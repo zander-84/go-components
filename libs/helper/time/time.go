@@ -50,6 +50,13 @@ func (t *TimeZone) Format(layout string) string {
 	return t.Now().Format(layout) //"2006-01-02 15:04:05"
 }
 
+func (t *TimeZone) FormatByTime(layout string, timer time.Time) string {
+	if timer.IsZero() {
+		return ""
+	}
+	return timer.Format(layout) //"2006-01-02 15:04:05"
+}
+
 func (t *TimeZone) FormatSimple(timer time.Time) string {
 	if timer.IsZero() {
 		return ""
