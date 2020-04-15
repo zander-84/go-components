@@ -57,7 +57,7 @@ func (this *robfigCrontab) AddJob(job *Job) error {
 func (this *robfigCrontab) Remove(id string) {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
-	if job, ok := this.jobs["id"]; ok {
+	if job, ok := this.jobs[id]; ok {
 		entry := job.Obj.(cron.Entry)
 		this.obj.Remove(entry.ID)
 		delete(this.jobs, id)
