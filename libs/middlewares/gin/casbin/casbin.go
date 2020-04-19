@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+//create index casbin_rule_p_type_index on casbin_rule (p_type);
 type Rbac struct {
 	mysql *gorm.DB
 	Obj   *casbin.Enforcer
