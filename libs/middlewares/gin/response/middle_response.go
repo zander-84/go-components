@@ -27,7 +27,11 @@ func (r *middleResponse) Middleware() gin.HandlerFunc {
 		//____ 接受panic
 		defer func() {
 			if rec := recover(); rec != nil {
-				Resp.SystemSpaceErr(c, fmt.Sprintf("%s\n", rec))
+				if conf.Debug {
+					Resp.SystemSpaceErr(c, fmt.Sprintf("%s\n", rec))
+				} else {
+					Resp.SystemSpaceErr(c, "system error")
+				}
 				HandleResponse(c, conf.Debug)
 				c.Abort()
 				return
