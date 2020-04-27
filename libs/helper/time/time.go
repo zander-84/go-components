@@ -82,6 +82,12 @@ func (t *TimeZone) NextDay() time.Time {
 	return today
 }
 
+func (t *TimeZone) AddDay(calcDay int) time.Time {
+	day := t.Now().AddDate(0, 0, calcDay).Format("2006-01-02")
+	today, _ := time.ParseInLocation("2006-01-02", day, t.location)
+	return today
+}
+
 func (t *TimeZone) Year() string {
 	return t.Now().Format("2006")
 }

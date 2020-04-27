@@ -37,7 +37,7 @@ func (this *Log) MarshalJSON() ([]byte, error) {
 		"duration": this.Duration,
 		"uid":      this.Uid,
 		"raw":      this.Raw,
-		"ts":       this.Ts,
+		"ts":       this.Ts.Format("2006-01-02 15:04:05"),
 	}
 
 	return json.Marshal(data)
