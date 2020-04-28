@@ -64,7 +64,7 @@ func (l *ZapLog) build() {
 	newCore := make([]zapcore.Core, 0)
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeTime = func(i time.Time, encoder zapcore.PrimitiveArrayEncoder) {
-		encoder.AppendString(i.Format("2006-01-02 15:04:05"))
+		encoder.AppendString(l.helper.TimeZone().LocationNow(i).Format("2006-01-02 15:04:05"))
 	}
 	allPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		//return lvl >= zapcore.ErrorLevel  highPriority
@@ -127,6 +127,7 @@ func (l *ZapLog) build() {
 		mysqlhook := CLoggerZapMysql.MysqlHook{}
 		mysqlhook.TableName = logconf.MysqlHook.TableName
 		mysqlhook.Gdb = l.gdb
+		mysqlhook.Helper = l.helper
 		mysqlWriter := zapcore.AddSync(&mysqlhook)
 		encoderConfig.EncodeLevel = zapcore.LowercaseLevelEncoder
 		jsonEncoder := zapcore.NewJSONEncoder(encoderConfig)

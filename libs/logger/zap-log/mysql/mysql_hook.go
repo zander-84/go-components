@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	CHelper "github.com/zander-84/go-components/libs/helper"
 	"github.com/zander-84/go-components/libs/logger"
 	"sync"
 	"time"
@@ -47,6 +48,7 @@ type MysqlHook struct {
 	TableName string
 	Gdb       *gorm.DB
 	mu        sync.Mutex
+	Helper    *CHelper.Helper
 }
 
 type Fields struct {
@@ -85,7 +87,7 @@ func (l *MysqlHook) Write(p []byte) (n int, err error) {
 	if err := json.Unmarshal(p, &data); err != nil {
 		return len(p), err
 	}
-	ts, _ := time.Parse("2006-01-02 15:04:05", data.Ts)
+	ts, _ := l.Helper.TimeZone().Parse("2006-01-02 15:04:05", data.Ts)
 
 	if data.Raw == nil {
 		data.Raw = ""
