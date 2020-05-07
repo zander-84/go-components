@@ -1,6 +1,7 @@
 package CHelper
 
 import (
+	CHelperCompound "github.com/zander-84/go-components/libs/helper/compound"
 	"github.com/zander-84/go-components/libs/helper/file"
 	"github.com/zander-84/go-components/libs/helper/format"
 	"github.com/zander-84/go-components/libs/helper/request"
@@ -25,6 +26,7 @@ type Helper struct {
 	conv      interface{}
 	httpCli   interface{}
 	transform interface{}
+	compound  interface{}
 }
 
 func NewHelper(opts ...func(interface{})) *Helper {
@@ -58,6 +60,7 @@ func (v *Helper) build() {
 	v.conv = CHelperType.NewConv()
 	v.httpCli = CHelperRequest.NewHttpCli()
 	v.transform = CHelperTransform.NewTransform()
+	v.compound = CHelperCompound.NewCompound()
 }
 
 func (v *Helper) Unique() *CHelperUnique.Unique {
@@ -94,4 +97,7 @@ func (v *Helper) HttpCli() *CHelperRequest.HttpCli {
 
 func (v *Helper) Transform() *CHelperTransform.Transform {
 	return v.transform.(*CHelperTransform.Transform)
+}
+func (v *Helper) Compound() *CHelperCompound.Compound {
+	return v.compound.(*CHelperCompound.Compound)
 }
