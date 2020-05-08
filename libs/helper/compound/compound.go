@@ -1,6 +1,7 @@
 package CHelperCompound
 
 import (
+	"errors"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
 	"github.com/nfnt/resize"
@@ -12,12 +13,17 @@ import (
 	"image/png"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strings"
 	"sync"
 	"unicode"
+)
+
+var (
+	fontPath  string
+	fontBytes []byte
+	fontType  *truetype.Font
 )
 
 type Compound struct {
@@ -30,11 +36,9 @@ type Compound struct {
 	obj        *image.RGBA
 	fontBytes  []byte
 	fontType   *truetype.Font
-	fontFace   font.Face
 	once       sync.Once
 	fontDrawer *font.Drawer
-
-	Point *fixed.Point26_6
+	Point      *fixed.Point26_6
 }
 
 func NewCompound() *Compound {
@@ -42,39 +46,60 @@ func NewCompound() *Compound {
 	return this
 }
 
+func SetCompound(fontpath string) error {
+	var err error
+	fontPath = fontpath
+	fontBytes, err = ioutil.ReadFile(fontPath)
+	if err != nil {
+		return err
+	}
+	fontType, err = truetype.Parse(fontBytes)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 //1200,800,"./src/simsun.ttf",18,72,1.2,1100
-func (this *Compound) Init(width float64, height float64, fontPath string, fontSize float64, dpi int, lineSpace float64) {
-	this.once.Do(func() {
-		this.width = width
-		this.height = height
+func (this *Compound) Init(width float64, height float64, fontpath string, fontSize float64, dpi int, lineSpace float64) error {
+	this.width = width
+	this.height = height
+	this.fontSize = fontSize
+	this.lineSpace = lineSpace
+	this.dpi = dpi
+
+	if fontPath == "" {
+		if fontPath == "" {
+			return errors.New("FontPath is Null")
+		}
 		this.fontPath = fontPath
-		this.fontSize = fontSize
-		this.lineSpace = lineSpace
-		this.dpi = dpi
+		this.fontBytes = fontBytes
+		this.fontType = fontType
+	} else {
+		this.fontPath = fontpath
 		var err error
 		this.fontBytes, err = ioutil.ReadFile(this.fontPath)
 		if err != nil {
-			log.Fatalln("fontPath err: ", err.Error())
+			return err
 		}
 		this.fontType, err = truetype.Parse(this.fontBytes)
 		if err != nil {
-			log.Fatalln("truetype err: ", err.Error())
+			return err
 		}
-		this.fontFace = truetype.NewFace(this.fontType, &truetype.Options{
+	}
+
+	this.fontDrawer = &font.Drawer{
+		Face: truetype.NewFace(this.fontType, &truetype.Options{
 			Size: float64(this.fontSize),
-		})
-		this.fontDrawer = &font.Drawer{
-			Face: this.fontFace,
-		}
+		}),
+	}
 
-		this.obj = image.NewRGBA(image.Rect(0, 0, int(this.width), int(this.height)))
-		this.Point = new(fixed.Point26_6)
-		*(this.Point) = freetype.Pt(10, 10)
+	this.obj = image.NewRGBA(image.Rect(0, 0, int(this.width), int(this.height)))
+	this.Point = new(fixed.Point26_6)
+	*(this.Point) = freetype.Pt(10, 10)
 
-		draw.Draw(this.obj, this.obj.Bounds(), image.White, image.Point{}, draw.Src)
-
-	})
-
+	draw.Draw(this.obj, this.obj.Bounds(), image.White, image.Point{}, draw.Src)
+	return nil
 }
 
 func (this *Compound) splitOnSpace(x string) []string {
@@ -159,6 +184,7 @@ func (this *Compound) AddTitle(title string, size float64) error {
 	this.Point.Y += c.PointToFixed(size * this.lineSpace)
 	return nil
 }
+
 func (this *Compound) AddBody(body string, x int, width float64) error {
 	fg := image.Black
 
