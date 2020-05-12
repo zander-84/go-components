@@ -15,30 +15,29 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 	"sync"
 	"unicode"
 )
 
 var (
-	fontPath  string
-	fontBytes []byte
-	fontType  *truetype.Font
+	globalFontPath string
+	globalFontType *truetype.Font
 )
 
 type Compound struct {
 	width      float64
 	height     float64
-	dpi        int
+	dpi        float64
 	fontPath   string
-	fontSize   float64
 	lineSpace  float64
 	obj        *image.RGBA
-	fontBytes  []byte
 	fontType   *truetype.Font
 	once       sync.Once
 	fontDrawer *font.Drawer
-	Point      *fixed.Point26_6
+
+	Point *fixed.Point26_6
 }
 
 func NewCompound() *Compound {
@@ -46,57 +45,51 @@ func NewCompound() *Compound {
 	return this
 }
 
-func SetCompound(fontpath string) error {
+func SetCompound(fontPath string) error {
 	var err error
-	fontPath = fontpath
-	fontBytes, err = ioutil.ReadFile(fontPath)
+	globalFontPath = fontPath
+	fontBytes, err := ioutil.ReadFile(globalFontPath)
 	if err != nil {
 		return err
 	}
-	fontType, err = truetype.Parse(fontBytes)
+	globalFontType, err = truetype.Parse(fontBytes)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-//1200,800,"./src/simsun.ttf",18,72,1.2,1100
-func (this *Compound) Init(width float64, height float64, fontpath string, fontSize float64, dpi int, lineSpace float64) error {
+//1200,800,"./src/simsun.ttf",18,72,1.2
+func (this *Compound) Init(width float64, height float64, fontpath string, lineSpace float64) error {
+
 	this.width = width
 	this.height = height
-	this.fontSize = fontSize
-	this.lineSpace = lineSpace
-	this.dpi = dpi
 
-	if fontPath == "" {
-		if fontPath == "" {
-			return errors.New("FontPath is Null")
+	this.lineSpace = lineSpace
+	this.dpi = 72
+
+	if fontpath == "" {
+		if globalFontPath == "" {
+			return errors.New("Need Set FontPath")
+		} else {
+			this.fontPath = globalFontPath
+			this.fontType = globalFontType
 		}
-		this.fontPath = fontPath
-		this.fontBytes = fontBytes
-		this.fontType = fontType
 	} else {
 		this.fontPath = fontpath
-		var err error
-		this.fontBytes, err = ioutil.ReadFile(this.fontPath)
+		fontBytes, err := ioutil.ReadFile(this.fontPath)
 		if err != nil {
 			return err
 		}
-		this.fontType, err = truetype.Parse(this.fontBytes)
+		this.fontType, err = truetype.Parse(fontBytes)
 		if err != nil {
 			return err
 		}
-	}
-
-	this.fontDrawer = &font.Drawer{
-		Face: truetype.NewFace(this.fontType, &truetype.Options{
-			Size: float64(this.fontSize),
-		}),
 	}
 
 	this.obj = image.NewRGBA(image.Rect(0, 0, int(this.width), int(this.height)))
 	this.Point = new(fixed.Point26_6)
-	*(this.Point) = freetype.Pt(10, 10)
+	*(this.Point) = freetype.Pt(0, 0)
 
 	draw.Draw(this.obj, this.obj.Bounds(), image.White, image.Point{}, draw.Src)
 	return nil
@@ -158,16 +151,36 @@ func (this *Compound) WordWrap(s string, width float64) []string {
 	return result
 }
 
-func (this *Compound) AddTitle(title string, size float64) error {
-	fg := image.Black
+func (this *Compound) SetX(x float64) {
+	c := freetype.NewContext()
+	this.Point.X = c.PointToFixed(x)
+}
 
+func (this *Compound) AddLine(fontSize float64) {
+	c := freetype.NewContext()
+	this.Point.Y += c.PointToFixed(fontSize * this.lineSpace)
+}
+func (this *Compound) AddY(c *freetype.Context, y float64) {
+	this.Point.Y += c.PointToFixed(y)
+}
+
+func (this *Compound) NewContext(fontSize float64) *freetype.Context {
+	this.fontDrawer = &font.Drawer{
+		Face: truetype.NewFace(this.fontType, &truetype.Options{
+			Size: fontSize,
+		}),
+	}
 	c := freetype.NewContext()
 	c.SetFont(this.fontType)
-	c.SetFontSize(float64(size))
+	c.SetFontSize(fontSize)
+	c.SetDPI(this.dpi)
 	c.SetClip(this.obj.Bounds())
 	c.SetDst(this.obj)
-	c.SetSrc(fg)
-
+	c.SetSrc(image.Black)
+	return c
+}
+func (this *Compound) AddTitle(title string, size float64) error {
+	c := this.NewContext(size)
 	w, _ := this.measureString(title)
 	x := (this.width - w) / 3
 	if x < 0 {
@@ -185,26 +198,16 @@ func (this *Compound) AddTitle(title string, size float64) error {
 	return nil
 }
 
-func (this *Compound) AddBody(body string, x int, width float64) error {
-	fg := image.Black
-
-	c := freetype.NewContext()
-	c.SetFont(this.fontType)
-	c.SetFontSize(this.fontSize)
-	c.SetClip(this.obj.Bounds())
-	c.SetDst(this.obj)
-	c.SetSrc(fg)
-	Y := this.Point.Y
-	*this.Point = freetype.Pt(x, 0)
-	this.Point.Y = Y
-
+func (this *Compound) AddBody(body string, fontSize float64, width float64) error {
+	c := this.NewContext(fontSize)
+	this.SetX((this.width - width) / 2)
 	text := this.WordWrap(body, width)
 	for _, v := range text {
 		_, err := c.DrawString(v, *this.Point)
 		if err != nil {
 			return err
 		}
-		this.Point.Y += c.PointToFixed(this.fontSize * this.lineSpace)
+		this.Point.Y += c.PointToFixed(fontSize * this.lineSpace)
 	}
 	return nil
 }
@@ -251,9 +254,90 @@ func (this *Compound) AddImage(imagePath string, imageWidth uint, imageHeight ui
 	return nil
 }
 
-func (this *Compound) AddMarginSpace(Y float64) {
-	c := freetype.NewContext()
-	this.Point.Y += c.PointToFixed(Y)
+func (this *Compound) HandleData(macroVal map[string]Data, microVal map[string]Data) map[string]Data {
+	for k, v := range macroVal {
+		for kk, vv := range microVal {
+			if k == kk {
+				v.Value = vv.Value
+				macroVal[k] = v
+			}
+		}
+	}
+	return macroVal
+}
+
+func (this *Compound) HandleBody(template string, data map[string]Data, size float64, width float64) error {
+	// 1. 正则替换文字
+	re := regexp.MustCompile(`{{[a-zA-Z0-9]+}}`)
+	regData := re.FindAllStringSubmatch(template, -1)
+	stringData := make(map[string]Data, 0)
+	for _, v := range regData {
+		key := v[0]
+		keyData := strings.Trim(strings.Trim(key, "{{"), "}}")
+		if vv, ok := data[keyData]; !ok {
+			return errors.New("Key: " + keyData + " Not Exist")
+		} else {
+			stringData[key] = vv
+		}
+	}
+	for k, v := range stringData {
+		if v.IsString() {
+			template = strings.ReplaceAll(template, k, v.GetString())
+		} else if v.IsTime() {
+			template = strings.ReplaceAll(template, k, v.GetTimeString())
+		}
+	}
+
+	// 2.处理图片跟换行
+	re2 := regexp.MustCompile(`{{{[a-zA-Z0-9]+}}}`)
+	reg2Data := re2.FindAllStringSubmatch(template, -1)
+	if len(reg2Data) > 0 {
+		for k, v := range reg2Data {
+			index := strings.Index(template, v[0])
+			if index < 0 {
+				return errors.New("lines: " + v[0] + " Not Exist")
+			} else {
+				vv := template[0:index]
+
+				if vv != "" {
+					if err := this.AddBody(vv, size, width); err != nil {
+						return err
+					}
+				}
+				keyData := strings.Trim(strings.Trim(v[0], "{{{"), "}}}")
+				if vvv, ok := data[keyData]; !ok {
+					return errors.New("Key: " + keyData + " Not Exist")
+				} else {
+					if vvv.IsRelativeImage() {
+						if err := this.AddImage(vvv.Value, vvv.ResizeWidth, vvv.ResizeHeight, vvv.PositionX, vvv.PositionY, false, vvv.IsRise); err != nil {
+							return err
+						}
+					} else if vvv.IsLine() {
+						this.AddLine(size)
+					}
+				}
+
+				template = template[index+len(v[0]):]
+				if k == len(reg2Data)-1 {
+					if err := this.AddBody(template, size, width); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := this.AddBody(template, size, width); err != nil {
+			return err
+		}
+	}
+	for _, v := range data {
+		if v.IsAbsoluteImage() {
+			if err := this.AddImage(v.Value, v.ResizeWidth, v.ResizeHeight, v.PositionX, v.PositionY, true, false); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func (this *Compound) Save(writer io.Writer) error {
