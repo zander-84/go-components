@@ -85,11 +85,11 @@ func (this *Redis) SetString(key string, str string, expires time.Duration) (err
 	return this.obj.Set(key, str, expires).Err()
 }
 
-func (this *Redis) GetString(key string, value interface{}) (string, error) {
+func (this *Redis) GetString(key string) (string, error) {
 	return this.obj.Get(key).Result()
 }
 
-func (this *Redis) GetBytes(key string, value interface{}) ([]byte, error) {
+func (this *Redis) GetBytes(key string) ([]byte, error) {
 	return this.obj.Get(key).Bytes()
 }
 
