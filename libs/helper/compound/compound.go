@@ -68,7 +68,7 @@ func (this *Compound) Init(width float64, height float64, fontpath string, fontS
 	this.lineSpace = lineSpace
 	this.dpi = dpi
 
-	if fontPath == "" {
+	if fontpath == "" {
 		if fontPath == "" {
 			return errors.New("FontPath is Null")
 		}
