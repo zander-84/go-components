@@ -259,6 +259,10 @@ func (this *Compound) AddImage(imagePath string, imageWidth uint, imageHeight ui
 }
 
 func (this *Compound) HandleData(macroVal map[string]Data, microVal map[string]Data) map[string]Data {
+	if microVal == nil {
+		return macroVal
+	}
+
 	for k, v := range macroVal {
 		for kk, vv := range microVal {
 			if k == kk {
