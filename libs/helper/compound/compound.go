@@ -274,6 +274,22 @@ func (this *Compound) HandleData(macroVal map[string]Data, microVal map[string]D
 	return macroVal
 }
 
+type Body struct {
+	Template string
+	Data     map[string]Data
+	Size     float64
+	Width    float64
+}
+
+func (this *Compound) HandleBodies(body []Body) error {
+	for _, v := range body {
+		if err := this.HandleBody(v.Template, v.Data, v.Size, v.Width); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (this *Compound) HandleBody(template string, data map[string]Data, size float64, width float64) error {
 	// 1. 正则替换文字
 	re := regexp.MustCompile(`{{[a-zA-Z0-9]+}}`)
