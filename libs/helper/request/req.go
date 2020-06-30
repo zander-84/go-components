@@ -102,7 +102,7 @@ func (this *HttpCli) ClientDo(client *http.Client, method string, url string, re
 	if reqFunc != nil {
 		reqFunc(req)
 	}
-	//req.Close = true
+	req.Close = true
 
 	//It looks like the that server (Apache 1.3, wow!) is serving up a truncated gzip response. If you explicitly request the identity encoding (preventing the Go transport from adding gzip itself), you won't get the ErrUnexpectedEOF:
 	//req.Header.Add("Accept-Encoding", "identity")
