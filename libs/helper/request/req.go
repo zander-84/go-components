@@ -12,6 +12,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"strings"
+	"time"
 )
 
 var Attempt = 2
@@ -63,7 +64,7 @@ func (this *HttpCli) doMap(method string, url string, reqFunc func(r *http.Reque
 
 func (this *HttpCli) Do(method string, url string, reqFunc func(r *http.Request), bodyReader io.Reader) (http.Header, []byte, error) {
 	var client = &http.Client{}
-
+	client.Timeout = 20 * time.Second
 	req, err := http.NewRequest(strings.ToUpper(method), url, bodyReader)
 	if err != nil {
 		return nil, nil, err
@@ -82,11 +83,13 @@ func (this *HttpCli) Do(method string, url string, reqFunc func(r *http.Request)
 	}
 
 	resp, err := client.Do(req)
+	if resp != nil {
+		defer resp.Body.Close()
+	}
 
 	if err != nil {
 		return nil, nil, err
 	} else {
-		defer resp.Body.Close()
 
 		body, err := ioutil.ReadAll(resp.Body)
 		return resp.Header, body, err
