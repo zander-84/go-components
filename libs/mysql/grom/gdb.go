@@ -49,19 +49,20 @@ func (this *Grom) build() {
 	this.obj.DB().SetConnMaxLifetime(time.Duration(this.conf.ConnMaxLifetime) * time.Second)
 	this.obj.SingularTable(true)
 	this.obj.LogMode(this.conf.Debug)
+	timeZone := this.conf.TimeZone
+	if timeZone == "" {
+		timeZone = "Asia/Shanghai"
+	}
+
+	var location *time.Location
+	location, err = time.LoadLocation(timeZone)
+	if err != nil {
+		log.Fatalln("mysql timezone err")
+	}
 
 	// 设置时间
 	this.obj.SetNowFuncOverride(func() time.Time {
-		timezone := this.conf.TimeZone
-		if timezone == "" {
-			timezone = "Asia/Shanghai"
-		}
-		if location, err := time.LoadLocation(timezone); err != nil {
-			log.Fatalln("mysql timezone err")
-			return time.Now()
-		} else {
-			return time.Now().In(location)
-		}
+		return time.Now().In(location)
 	})
 
 	if this.conf.RemoveSomeCallbacks {
