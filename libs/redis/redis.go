@@ -140,7 +140,11 @@ func (this *RedisCache) Set(key string, value interface{}, expires time.Duration
 }
 
 func (this *RedisCache) Delete(key string) (err error) {
-	return this.obj.Delete(key)
+	err = this.obj.Delete(key)
+	if err == cache.ErrCacheMiss {
+		return nil
+	}
+	return err
 }
 
 func (this *RedisCache) GetOrSet(key string, ptrValue interface{}, f func() (value interface{}, err error), expires time.Duration) (err error) {
