@@ -44,7 +44,7 @@ type Response interface {
 	UserSpaceErr(c *gin.Context, data interface{}, debugs ...interface{})
 
 	// 未认证
-	Unauthorized(c *gin.Context)
+	Unauthorized(c *gin.Context, data interface{})
 
 	// 限速
 	RateLimit(c *gin.Context)

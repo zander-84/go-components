@@ -86,11 +86,11 @@ func (r *defaultResponse) Forbidden(c *gin.Context) {
 	})
 }
 
-func (r *defaultResponse) Unauthorized(c *gin.Context) {
+func (r *defaultResponse) Unauthorized(c *gin.Context, data interface{}) {
 	c.Set(Key, &defaultResponse{
 		Code:  http.StatusUnauthorized,
 		Msg:   Codes[http.StatusUnauthorized],
-		Data:  nil,
+		Data:  data,
 		Debug: nil,
 	})
 }
