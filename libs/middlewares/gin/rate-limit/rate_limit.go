@@ -31,7 +31,7 @@ func (r *RateLimiter) Init(conf Conf) {
 	}
 
 	lmt = tollbooth.NewLimiter(r.conf.Max, nil)
-	lmt.SetIPLookups([]string{"RemoteAddr", "X-Forwarded-For", "X-Real-IP"})
+	lmt.SetIPLookups([]string{"X-Real-IP", "X-Forwarded-For", "RemoteAddr"})
 	lmt.SetBurst(r.conf.Burst)
 }
 
@@ -54,7 +54,7 @@ func (r *RateLimiter) Middleware() gin.HandlerFunc {
 			CGinResponse.HandleResponse(c, false)
 			c.Abort()
 			return
-		}else {
+		} else {
 			c.Next()
 		}
 
