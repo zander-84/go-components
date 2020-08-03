@@ -12,44 +12,32 @@ func NewConsumer() *Consumer {
 }
 
 func (n *Consumer) Get(conf *nsq.Config, topic string, channel string) (*nsq.Consumer, error) {
-
 	if conf == nil {
 		conf = nsq.NewConfig()
 	}
 
 	return nsq.NewConsumer(topic, channel, conf)
 }
+func (this *Consumer) Stop(consumer *nsq.Consumer) {
+	consumer.Stop()
+}
 
 //  ConnectToNSQLookupds  循环 ConnectToNSQLookupd
-func (n *Consumer) ConsumeByLookupds(conf *nsq.Config, topic string, channel string, address []string, handler nsq.Handler, concurrency int) error {
-	var consumer *nsq.Consumer
-	var err error
-	if conf == nil {
-		conf = nsq.NewConfig()
-	}
-
-	if consumer, err = nsq.NewConsumer(topic, channel, conf); err != nil {
-		return err
-	}
+func (n *Consumer) ConsumeByLookupds(consumer *nsq.Consumer, address []string, handler nsq.Handler, concurrency int) error {
 	consumer.AddConcurrentHandlers(handler, concurrency)
 	return consumer.ConnectToNSQLookupds(address)
 }
 
 // ConnectToNSQDs 循环 ConnectToNSQD
-func (n *Consumer) ConsumeByNSQDS(conf *nsq.Config, topic string, channel string, address []string, handler nsq.Handler, concurrency int)  error {
-	var consumer *nsq.Consumer
-	var err error
-	if conf == nil {
-		conf = nsq.NewConfig()
-	}
-
-	if consumer, err = nsq.NewConsumer(topic, channel, conf); err != nil {
-		return err
-	}
+func (n *Consumer) ConsumeByNSQDS(consumer *nsq.Consumer, address []string, handler nsq.Handler, concurrency int) error {
 	consumer.AddConcurrentHandlers(handler, concurrency)
 	return consumer.ConnectToNSQDs(address)
+}
 
-
+//
+func (n *Consumer) ConsumeByNSQD(consumer *nsq.Consumer, address string, handler nsq.Handler, concurrency int) error {
+	consumer.AddConcurrentHandlers(handler, concurrency)
+	return consumer.ConnectToNSQD(address)
 }
 
 func (n *Consumer) MultiHandles(consumer *nsq.Consumer, handler nsq.Handler, concurrency int) {

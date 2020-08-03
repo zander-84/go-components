@@ -7,17 +7,13 @@ import (
 
 var _producer = new(Producer)
 
-type Producer struct {
-}
+type Producer struct{}
 
 func NewProducer() *Producer {
 	return _producer
 }
 
-func (n *Producer) Get(conf *nsq.Config, addr string, ) (*nsq.Producer, error) {
-	var producer *nsq.Producer
-	var err error
-
+func (this *Producer) Get(conf *nsq.Config, addr string) (producer *nsq.Producer, err error) {
 	if conf == nil {
 		conf = nsq.NewConfig()
 	}
@@ -33,33 +29,19 @@ func (n *Producer) Get(conf *nsq.Config, addr string, ) (*nsq.Producer, error) {
 	return producer, nil
 }
 
-func (n *Producer) Publish(conf *nsq.Config, addr string, topic string, body []byte) error {
-	var producer *nsq.Producer
-	var err error
-	if producer, err = n.Get(conf, addr); err != nil {
-		return err
-	}
-	defer producer.Stop()
+func (this *Producer) Stop(producer *nsq.Producer) {
+	producer.Stop()
+}
+
+func (this *Producer) Publish(producer *nsq.Producer, topic string, body []byte) error {
 	return producer.Publish(topic, body)
 }
 
-func (n *Producer) MultiPublish(conf *nsq.Config, addr string, topic string, body [][]byte) error {
-	var producer *nsq.Producer
-	var err error
-	if producer, err = n.Get(conf, addr); err != nil {
-		return err
-	}
-	defer producer.Stop()
+func (this *Producer) MultiPublish(producer *nsq.Producer, topic string, body [][]byte) error {
 	return producer.MultiPublish(topic, body)
 }
 
 //推动到延迟队列  适用于很多定时场景
-func (n *Producer) DeferredPublish(conf *nsq.Config, addr string, topic string, delay time.Duration, body []byte) error {
-	var producer *nsq.Producer
-	var err error
-	if producer, err = n.Get(conf, addr); err != nil {
-		return err
-	}
-	defer producer.Stop()
+func (this *Producer) DeferredPublish(producer *nsq.Producer, topic string, delay time.Duration, body []byte) error {
 	return producer.DeferredPublish(topic, delay, body)
 }
