@@ -13,6 +13,8 @@ import (
 	"github.com/zander-84/go-components/libs/logger"
 	"github.com/zander-84/go-components/libs/logger/zap-log"
 	"github.com/zander-84/go-components/libs/middlewares"
+	CMongo "github.com/zander-84/go-components/libs/mongo"
+	"github.com/zander-84/go-components/libs/mongo/driver"
 	"github.com/zander-84/go-components/libs/mysql"
 	"github.com/zander-84/go-components/libs/mysql/grom"
 	"github.com/zander-84/go-components/libs/nsq"
@@ -91,6 +93,23 @@ func (this *components) Mysql() CMysql.Mysql {
 
 		this.attach(fieldMysql, mysql)
 		return mysql
+	}
+}
+
+// 获取gorm 组件
+func (this *components) Mongo() CMongo.Mongo {
+	if this.IsExist(fieldMongo) {
+		return this.Get(fieldMongo).(CMongo.Mongo)
+	} else {
+
+		mgo := this.container.buildCache(
+			fieldMongo,
+			driver.BuildMongo,
+			driver.SetConfig(this.conf.Components.Mongo.Driver),
+		).(CMongo.Mongo)
+
+		this.attach(fieldMongo, mgo)
+		return mgo
 	}
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/zander-84/go-components/libs/helper"
 	"github.com/zander-84/go-components/libs/logger"
 	"github.com/zander-84/go-components/libs/middlewares"
+	CMongo "github.com/zander-84/go-components/libs/mongo"
 	"github.com/zander-84/go-components/libs/mysql"
 	"github.com/zander-84/go-components/libs/nsq"
 	CRedis "github.com/zander-84/go-components/libs/redis"
@@ -22,6 +23,7 @@ var (
 	fieldMemoryCache = "inner.memoryCache"
 	fieldRedis       = "inner.redis"
 	fieldMysql       = "inner.mysql"
+	fieldMongo       = "inner.mongo"
 	fieldValidator   = "inner.validator"
 	fieldHelper      = "inner.helper"
 	fieldAli         = "inner.ali"
@@ -42,6 +44,9 @@ type Components interface {
 
 	// 获取mysql
 	Mysql() CMysql.Mysql
+
+	// 获取mongo
+	Mongo() CMongo.Mongo
 
 	// 日志
 	Log() CLogger.Logger

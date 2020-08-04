@@ -9,6 +9,7 @@ import (
 	CCron "github.com/zander-84/go-components/libs/cron"
 	"github.com/zander-84/go-components/libs/helper"
 	comLoggerZap "github.com/zander-84/go-components/libs/logger/zap-log"
+	"github.com/zander-84/go-components/libs/mongo/driver"
 	"github.com/zander-84/go-components/libs/mysql/grom"
 	CNsq "github.com/zander-84/go-components/libs/nsq"
 	CRedis "github.com/zander-84/go-components/libs/redis"
@@ -32,6 +33,10 @@ type BasicConf struct {
 
 		Mysql struct {
 			Gorm CGrom.Conf
+		}
+
+		Mongo struct {
+			Driver driver.Conf
 		}
 
 		Log struct {
