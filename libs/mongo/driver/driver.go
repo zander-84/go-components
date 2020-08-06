@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
-	"time"
 )
 
 type Mongo struct {
@@ -46,16 +44,16 @@ func (this *Mongo) build() {
 	mongoOptions.MaxPoolSize = &MaxPoolSize
 	mongoOptions.MinPoolSize = &MinPoolSize
 
-	mongoOptions.SetMaxConnIdleTime(time.Duration(this.conf.MaxConnIdleTime) * time.Second)
+	//mongoOptions.SetMaxConnIdleTime(time.Duration(this.conf.MaxConnIdleTime) * time.Second)
 
 	//ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	//defer cancel()
 	this.obj, err = mongo.Connect(context.TODO(), mongoOptions)
 	if err != nil {
-		log.Fatalln("mongo Connect err: " + err.Error())
+		fmt.Println("mongo Connect err: " + err.Error())
 	}
 	if err = this.obj.Ping(context.TODO(), nil); err != nil {
-		log.Fatalln("mongo err: " + err.Error())
+		fmt.Println("mongo err: " + err.Error())
 	}
 
 	this.obj.Database(this.conf.Database)
