@@ -47,9 +47,10 @@ func (this *Mongo) build() {
 	mongoOptions.MinPoolSize = &MinPoolSize
 
 	mongoOptions.SetMaxConnIdleTime(time.Duration(this.conf.MaxConnIdleTime) * time.Second)
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	this.obj, err = mongo.Connect(ctx, mongoOptions)
+
+	//ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	//defer cancel()
+	this.obj, err = mongo.Connect(context.TODO(), mongoOptions)
 	if err != nil {
 		log.Fatalln("mongo Connect err: " + err.Error())
 	}
