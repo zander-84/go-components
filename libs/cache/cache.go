@@ -29,4 +29,6 @@ type Cache interface {
 	Delete(key string) error
 
 	GetOrSet(key string, ptrValue interface{}, f func() (value interface{}, err error), expires time.Duration) error
+
+	Flush() error
 }

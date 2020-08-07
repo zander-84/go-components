@@ -122,3 +122,7 @@ func (c *Memory) Exists(key string) bool {
 	_, found := c.obj.Get(key)
 	return found
 }
+func (c *Memory) Flush() error {
+	c.obj.Flush()
+	return nil
+}

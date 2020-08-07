@@ -18,7 +18,8 @@ type Redis struct {
 var _ CCache.Cache = new(RedisCache)
 
 type RedisCache struct {
-	obj *cache.Codec
+	redis *Redis
+	obj   *cache.Codec
 }
 
 // *Redis
@@ -68,6 +69,7 @@ func (this *Redis) build() {
 			return msgpack.Unmarshal(b, v)
 		},
 	}
+	this.cache.redis = this
 }
 
 func (this *Redis) Cache() *RedisCache {
@@ -163,4 +165,8 @@ func (this *RedisCache) GetOrSet(key string, ptrValue interface{}, f func() (val
 
 func (this *RedisCache) Exists(key string) bool {
 	return this.obj.Exists(key)
+}
+
+func (this *RedisCache) Flush() error {
+	return this.redis.obj.FlushDB().Err()
 }
