@@ -116,15 +116,17 @@ func (this *HttpCli) ClientDo(client *http.Client, method string, url string, re
 	}
 
 	resp, err := client.Do(req)
+	if resp != nil {
+		defer resp.Body.Close()
+	}
 
 	if err != nil {
 		return nil, nil, err
 	} else {
-		defer resp.Body.Close()
-
 		body, err := ioutil.ReadAll(resp.Body)
 		return resp.Header, body, err
 	}
+
 }
 
 var ErrNoRedirect = errors.New("Don't redirect!")
