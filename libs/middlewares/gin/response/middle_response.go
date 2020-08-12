@@ -61,6 +61,11 @@ func HasResp(c *gin.Context) bool {
 }
 
 func HandleResponse(c *gin.Context, debug bool) {
+	defer func() {
+		if rec := recover(); rec != nil {
+		}
+	}()
+
 	if data, ok := c.Get(Key); ok {
 		if data2, ok2 := data.(*defaultResponse); ok2 {
 			c.Set(Key, nil)
