@@ -3,6 +3,7 @@ package CLogger
 const (
 	FieldRaw      = "raw"
 	FieldFrom     = "from"
+	FieldTag      = "tag"
 	FieldUid      = "uid"
 	FieldDuration = "duration"
 	FieldTrace    = "traceid"
@@ -17,6 +18,7 @@ type Data struct {
 	Msg      string      // 消息
 	Raw      interface{} // 源数据
 	From     string      //来源
+	Tag      string      //来源
 	Duration float64     //持续时间
 }
 
@@ -36,6 +38,13 @@ type Logger interface {
 	ErrorFrom(data string, from string)
 	PanicFrom(data string, from string)
 	FatalFrom(data string, from string)
+
+	// 来源版tag
+	DebugFromWithTag(data string, from string, tag string)
+	InfoFromWithTag(data string, from string, tag string)
+	ErrorFromWithTag(data string, from string, tag string)
+	PanicFromWithTag(data string, from string, tag string)
+	FatalFromWithTag(data string, from string, tag string)
 
 	// 详情版
 	ExtendDebug(data Data)

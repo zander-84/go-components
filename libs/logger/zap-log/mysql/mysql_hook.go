@@ -17,6 +17,7 @@ type Log struct {
 	Level    string    `json:"level,omitempty" gorm:""`
 	Msg      string    `json:"msg,omitempty" gorm:""`
 	From     string    `json:"from,omitempty" gorm:""`
+	Tag      string    `json:"tag,omitempty" gorm:""`
 	Duration float64   `json:"duration,omitempty" gorm:""`
 	Uid      int       `json:"uid,omitempty" gorm:""`
 	Raw      string    `json:"raw,omitempty" gorm:""`
@@ -35,6 +36,7 @@ func (this *Log) MarshalJSON() ([]byte, error) {
 		"level":    this.Level,
 		"msg":      this.Msg,
 		"from":     this.From,
+		"tag":      this.Tag,
 		"duration": this.Duration,
 		"uid":      this.Uid,
 		"raw":      this.Raw,
@@ -65,6 +67,7 @@ CREATE TABLE `log` (
   `level` varchar(255) NOT NULL DEFAULT '' COMMENT '级别',
   `msg` varchar(255) NOT NULL DEFAULT '' COMMENT '消息',
   `from` varchar(100) NOT NULL DEFAULT '' COMMENT '来源',
+  `tag` varchar(100) NOT NULL DEFAULT '' COMMENT 'tag',
   `duration` double unsigned DEFAULT NULL COMMENT '持续时间',
   `uid` bigint(9) unsigned DEFAULT NULL COMMENT '用户ID',
   `raw` text COMMENT '内容',

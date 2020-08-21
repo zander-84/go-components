@@ -27,6 +27,11 @@ type Conf struct {
 		Enable    bool //是否启用
 		TableName string
 	}
+
+	MongoHook struct {
+		Enable    bool //是否启用
+		TableName string
+	}
 }
 
 func (c *Conf) SetDefault() Conf {

@@ -21,6 +21,7 @@ import (
 	"github.com/zander-84/go-components/libs/redis"
 	"github.com/zander-84/go-components/libs/validate"
 	"github.com/zander-84/go-components/libs/worker"
+	"go.mongodb.org/mongo-driver/mongo"
 	"sync"
 )
 
@@ -126,6 +127,10 @@ func (this *components) Log() CLogger.Logger {
 		if this.conf.Components.Log.Zap.MysqlHook.Enable {
 			opts = append(opts, CLoggerZap.SetGorm(this.Mysql().Obj().(*gorm.DB)))
 		}
+		if this.conf.Components.Log.Zap.MongoHook.Enable {
+			opts = append(opts, CLoggerZap.SetMongo(this.Mongo().DB().(*mongo.Database)))
+		}
+
 		log := this.container.buildCache(fieldLog, CLoggerZap.BuildZapLog, opts...).(CLogger.Logger)
 		this.attach(fieldLog, log)
 		return log

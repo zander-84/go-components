@@ -5,7 +5,9 @@ import (
 	"github.com/zander-84/go-components/libs/helper"
 	"github.com/zander-84/go-components/libs/logger"
 	"github.com/zander-84/go-components/libs/logger/zap-log/email"
+	CLoggerZapMongo "github.com/zander-84/go-components/libs/logger/zap-log/mongo"
 	"github.com/zander-84/go-components/libs/logger/zap-log/mysql"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -20,6 +22,7 @@ type ZapLog struct {
 	obj    *zap.Logger
 	conf   Conf
 	gdb    *gorm.DB
+	mdb    *mongo.Database
 	helper *CHelper.Helper
 }
 
@@ -56,6 +59,13 @@ func SetGorm(gbd *gorm.DB) func(interface{}) {
 	return func(i interface{}) {
 		g := i.(*ZapLog)
 		g.gdb = gbd
+	}
+}
+
+func SetMongo(mbd *mongo.Database) func(interface{}) {
+	return func(i interface{}) {
+		g := i.(*ZapLog)
+		g.mdb = mbd
 	}
 }
 
@@ -122,7 +132,7 @@ func (l *ZapLog) build() {
 		})))
 	}
 
-	//____ 写入数据库
+	//____ 写入mysql
 	if logconf.MysqlHook.Enable {
 		mysqlhook := CLoggerZapMysql.MysqlHook{}
 		mysqlhook.TableName = logconf.MysqlHook.TableName
@@ -133,6 +143,20 @@ func (l *ZapLog) build() {
 		jsonEncoder := zapcore.NewJSONEncoder(encoderConfig)
 		newCore = append(newCore, zapcore.NewCore(jsonEncoder, mysqlWriter, allPriority))
 	}
+
+	//____ 写入mongo
+	if logconf.MongoHook.Enable {
+		CLoggerZapMongo.Helper = l.helper
+		mongohook := CLoggerZapMongo.MongoHook{}
+		mongohook.TableName = logconf.MysqlHook.TableName
+		mongohook.Mdb = l.mdb
+		mongohook.Helper = l.helper
+		mongoWriter := zapcore.AddSync(&mongohook)
+		encoderConfig.EncodeLevel = zapcore.LowercaseLevelEncoder
+		jsonEncoder := zapcore.NewJSONEncoder(encoderConfig)
+		newCore = append(newCore, zapcore.NewCore(jsonEncoder, mongoWriter, allPriority))
+	}
+
 	if logconf.AddCaller {
 		l.obj = zap.New(zapcore.NewTee(newCore...), zap.AddCaller())
 	} else {
@@ -189,6 +213,29 @@ func (l *ZapLog) PanicFrom(data string, from string) {
 
 func (l *ZapLog) FatalFrom(data string, from string) {
 	l.obj.Fatal(data, zap.String(CLogger.FieldFrom, from))
+}
+
+//*______________________________________________________________________*/
+//__ 来源版tag
+/*______________________________________________________________________*/
+func (l *ZapLog) DebugFromWithTag(data string, from string, tag string) {
+	l.obj.Debug(data, zap.String(CLogger.FieldFrom, from), zap.String(CLogger.FieldTag, tag))
+}
+
+func (l *ZapLog) InfoFromWithTag(data string, from string, tag string) {
+	l.obj.Info(data, zap.String(CLogger.FieldFrom, from), zap.String(CLogger.FieldTag, tag))
+}
+
+func (l *ZapLog) ErrorFromWithTag(data string, from string, tag string) {
+	l.obj.Error(data, zap.String(CLogger.FieldFrom, from), zap.String(CLogger.FieldTag, tag))
+}
+
+func (l *ZapLog) PanicFromWithTag(data string, from string, tag string) {
+	l.obj.Panic(data, zap.String(CLogger.FieldFrom, from), zap.String(CLogger.FieldTag, tag))
+}
+
+func (l *ZapLog) FatalFromWithTag(data string, from string, tag string) {
+	l.obj.Fatal(data, zap.String(CLogger.FieldFrom, from), zap.String(CLogger.FieldTag, tag))
 }
 
 //*______________________________________________________________________*/
