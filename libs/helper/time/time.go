@@ -67,7 +67,15 @@ func (t *TimeZone) FormatSimple(timer time.Time) string {
 // "01/02/2006", "02/08/2015"
 func (t *TimeZone) Parse(layout string, sourceTime string) (time.Time, error) {
 	t1, err := time.ParseInLocation(layout, sourceTime, t.location)
+	if err != nil {
+		return time.Time{}, err
+	}
 	return t1.In(t.location), err
+}
+
+//
+func (t *TimeZone) ParseFromUnix(unix int64) time.Time {
+	return time.Unix(unix, 0).In(t.location)
 }
 
 func (t *TimeZone) Today() time.Time {
