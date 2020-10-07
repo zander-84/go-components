@@ -6,19 +6,18 @@ import (
 	"sync"
 )
 
-
-
 type Ali struct {
-	oss *oss2.Oss
+	oss        *oss2.Oss
+	ossPrivate *oss2.OssPrivate
 
 	conf Conf
 	once sync.Once
 }
 
 //
-func NewAli(opts ...func(interface{}))*Ali {
+func NewAli(opts ...func(interface{})) *Ali {
 	var _ali = &Ali{}
-	for _,opt := range opts{
+	for _, opt := range opts {
 		opt(_ali)
 	}
 	_ali.build()
@@ -29,7 +28,7 @@ func BuildAli(opts ...func(interface{})) interface{} {
 	return NewAli(opts...)
 }
 
-func SetConfig(conf Conf,helper *CHelper.Helper) func(interface{}) {
+func SetConfig(conf Conf, helper *CHelper.Helper) func(interface{}) {
 	return func(i interface{}) {
 		g := i.(*Ali)
 		g.conf = conf
@@ -38,19 +37,23 @@ func SetConfig(conf Conf,helper *CHelper.Helper) func(interface{}) {
 	}
 }
 
-
-func (v *Ali) construct(conf Conf, helper *CHelper.Helper) *Ali {
-	v.conf = conf
-	v.conf.Helper = helper
-	v.conf.SetDefault()
-	v.build()
-	return v
+func (this *Ali) construct(conf Conf, helper *CHelper.Helper) *Ali {
+	this.conf = conf
+	this.conf.Helper = helper
+	this.conf.SetDefault()
+	this.build()
+	return this
 }
 
-func (v *Ali) build() {
-	v.oss = oss2.New(v.conf.Oss)
+func (this *Ali) build() {
+	this.oss = oss2.New(this.conf.Oss)
+	this.ossPrivate = oss2.NewOssPrivate(this.conf.OssPrivate)
 }
 
-func (v *Ali) Oss() *oss2.Oss {
-	return v.oss
+func (this *Ali) Oss() *oss2.Oss {
+	return this.oss
+}
+
+func (this *Ali) OssPrivate() *oss2.OssPrivate {
+	return this.ossPrivate
 }

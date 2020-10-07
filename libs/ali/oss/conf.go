@@ -8,7 +8,6 @@ type Conf struct {
 	Endpoint        string
 	Bucket          string
 	Dir             string
-	PrivateDir      string
 	Host            string
 	Helper          *CHelper.Helper
 }

@@ -292,13 +292,6 @@ func (v *Oss) GetPrefixById(uid string) string {
 	return strings.Trim(fmt.Sprintf("%s/user/%s/%s/", strings.Trim(v.conf.Dir, "/"), uid, now.Format("200601")), "/") + "/"
 }
 
-// 获取私有文件前缀
-//______________________________________________________________________
-func (v *Oss) GetPrivatePrefixById(uid string) string {
-	now := time.Now()
-	return strings.Trim(fmt.Sprintf("%s/user/%s/%s/", strings.Trim(v.conf.PrivateDir, "/"), uid, now.Format("200601")), "/") + "/"
-}
-
 // 获取新的完整名字
 //______________________________________________________________________
 func (v *Oss) NewObjectName(filename string) string {
