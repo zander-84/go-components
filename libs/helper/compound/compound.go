@@ -216,30 +216,40 @@ func (this *Compound) AddBody(body string, fontSize float64, width float64) erro
 	return nil
 }
 
-// absolutePosition ture 绝对位置   false 相对位置
-func (this *Compound) AddImage(imagePath string, imageWidth uint, imageHeight uint, x int, y int, absolutePosition bool, addHeight bool) error {
+type GetImage func(imagePath string) (image.Image, error)
+
+func GetImg(imagePath string) (image.Image, error) {
 	var img image.Image
 	if strings.Index(imagePath, "http") == 0 {
 		resp, err := http.Get(imagePath)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		img, _, err = image.Decode(resp.Body)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		defer resp.Body.Close()
 
 	} else {
 		f, err := os.Open(imagePath)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		defer f.Close()
 		img, _, err = image.Decode(f)
 		if err != nil {
-			return err
+			return nil, err
 		}
+	}
+	return img, nil
+}
+
+// absolutePosition ture 绝对位置   false 相对位置
+func (this *Compound) AddImage(imageFun GetImage, imagePath string, imageWidth uint, imageHeight uint, x int, y int, absolutePosition bool, addHeight bool) error {
+	img, err := imageFun(imagePath)
+	if err != nil {
+		return err
 	}
 
 	img = resize.Resize(imageWidth, imageHeight, img, resize.Lanczos3)
@@ -281,16 +291,16 @@ type Body struct {
 	Width    float64
 }
 
-func (this *Compound) HandleBodies(body []Body) error {
+func (this *Compound) HandleBodies(body []Body, imageFun GetImage) error {
 	for _, v := range body {
-		if err := this.HandleBody(v.Template, v.Data, v.Size, v.Width); err != nil {
+		if err := this.HandleBody(v.Template, v.Data, v.Size, v.Width, imageFun); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (this *Compound) HandleBody(template string, data map[string]Data, size float64, width float64) error {
+func (this *Compound) HandleBody(template string, data map[string]Data, size float64, width float64, imageFun GetImage) error {
 	// 1. 正则替换文字
 	re := regexp.MustCompile(`{{[a-zA-Z0-9]+}}`)
 	regData := re.FindAllStringSubmatch(template, -1)
@@ -333,7 +343,7 @@ func (this *Compound) HandleBody(template string, data map[string]Data, size flo
 					return errors.New("Key: " + keyData + " Not Exist")
 				} else {
 					if vvv.IsRelativeImage() {
-						if err := this.AddImage(vvv.Value, vvv.ResizeWidth, vvv.ResizeHeight, vvv.PositionX, vvv.PositionY, false, vvv.IsRise); err != nil {
+						if err := this.AddImage(imageFun, vvv.Value, vvv.ResizeWidth, vvv.ResizeHeight, vvv.PositionX, vvv.PositionY, false, vvv.IsRise); err != nil {
 							return err
 						}
 					} else if vvv.IsLine() {
@@ -356,7 +366,7 @@ func (this *Compound) HandleBody(template string, data map[string]Data, size flo
 	}
 	for _, v := range data {
 		if v.IsAbsoluteImage() {
-			if err := this.AddImage(v.Value, v.ResizeWidth, v.ResizeHeight, v.PositionX, v.PositionY, true, false); err != nil {
+			if err := this.AddImage(imageFun, v.Value, v.ResizeWidth, v.ResizeHeight, v.PositionX, v.PositionY, true, false); err != nil {
 				return err
 			}
 		}
